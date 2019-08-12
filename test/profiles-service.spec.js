@@ -125,7 +125,7 @@ describe(`Profiles service object`, function() {
     it(`insertProfile() inserts a new profile and resolves the new profile with an 'id'`, () => {
       const newProfile = {
         name: 'tester three',
-        email: 'test2@tester.com',
+        email: 'test3@tester.com',
         phone: '(888)888-8887',
         life_insurance_goal: '1000000',
         get_email: true,

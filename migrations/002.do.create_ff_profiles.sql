@@ -1,6 +1,6 @@
 CREATE TABLE ff_profiles (
   id SERIAL PRIMARY KEY,
-  email TEXT REFERENCES ff_users(email) ON DELETE SET NULL,
+  email TEXT REFERENCES ff_users(email) ON DELETE SET NULL UNIQUE,
   name TEXT NOT NULL,
   phone TEXT NOT NULL,
   life_insurance_goal TEXT,
