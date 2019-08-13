@@ -28,6 +28,11 @@ app.get('/users/:user_id', (req, res, next) => {
   const knexInstance = req.app.get('db')
   UsersService.getById(knexInstance, req.params.user_id)
     .then(user => {
+      if (!user) {
+        return res.status(404).json({
+          error: { message: `User doesn't exist` }
+        })
+      }
       res.json(user)
     })
     .catch(next)
@@ -46,6 +51,11 @@ app.get('/profiles/:profile_id', (req, res, next) => {
   const knexInstance = req.app.get('db')
   ProfilesService.getById(knexInstance, req.params.profile_id)
     .then(profile => {
+      if (!profile) {
+        return res.status(404).json({
+          error: { message: `Profile doesn't exist` }
+        })
+      }
       res.json(profile)
     })
     .catch(next)

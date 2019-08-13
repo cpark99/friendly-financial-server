@@ -21,6 +21,14 @@ describe.only('Users Endpoints', function() {
   afterEach('cleanup', () => db('ff_users').truncate())
 
   describe(`GET /users`, () => {
+    context(`Given no users`, () => {
+      it(`responds with 200 and an empty list`, () => {
+        return supertest(app)
+          .get('/users')
+          .expect(200, [])
+      })
+    })
+
     context('Given there are users in the database', () => {
       const testUsers = makeUsersArray()
       
@@ -39,6 +47,15 @@ describe.only('Users Endpoints', function() {
   })
   
   describe(`GET /users/:user_id`, () => {
+    context(`Given no users`, () => {
+      it(`responds with 404`, () => {
+        const userId = 123456
+        return supertest(app)
+          .get(`/users/${userId}`)
+          .expect(404, { error: { message: `User doesn't exist` } })
+      })
+    })
+
     context('Given there are users in the database', () => {
       const testUsers = makeUsersArray()
       
