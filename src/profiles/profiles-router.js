@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const xss = require('xss')
 const ProfilesService = require('./profiles-service')
@@ -47,7 +48,7 @@ profilesRouter
       .then(profile => {
         res
           .status(201)
-          .location(`/profiles/${profile.id}`)
+          .location(path.posix.join(req.originalUrl, `/${profile.id}`))
           .json(profile)
       })
       .catch(next)
@@ -80,6 +81,19 @@ profilesRouter
       req.params.profile_id
     )
       .then(() => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
+  .patch(jsonParser, (req, res, next) => {
+    const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_modified } = req.body
+    const profileToUpdate = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_modified }
+    ProfilesService.updateProfile(
+      req.app.get('db'),
+      req.params.profile_id,
+      profileToUpdate
+    )
+      .then(numRowsAffected => {
         res.status(204).end()
       })
       .catch(next)

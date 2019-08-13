@@ -20,11 +20,11 @@ describe('Profiles Endpoints', function() {
 
   afterEach('cleanup', () => db('ff_profiles').truncate())
 
-  describe(`GET /profiles`, () => {
+  describe(`GET /api/profiles`, () => {
     context(`Given no profiles`, () => {
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
-          .get('/profiles')
+          .get('/api/profiles')
           .expect(200, [])
       })
     })
@@ -38,9 +38,9 @@ describe('Profiles Endpoints', function() {
           .insert(testProfiles)
       })
   
-      it('GET /profiles responds with 200 and all of the profiles', () => {
+      it('GET /api/profiles responds with 200 and all of the profiles', () => {
         return supertest(app)
-          .get('/profiles')
+          .get('/api/profiles')
           .expect(200, testProfiles)
       })
     })
@@ -56,7 +56,7 @@ describe('Profiles Endpoints', function() {
 
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get(`/profiles`)
+          .get(`/api/profiles`)
           .expect(200)
           .expect(res => {
             expect(res.body[0].name).to.eql(expectedProfile.name)
@@ -67,12 +67,12 @@ describe('Profiles Endpoints', function() {
     })
   })
 
-  describe(`GET /profiles/:profile_id`, () => {
+  describe(`GET /api/profiles/:profile_id`, () => {
     context(`Given no profiles`, () => {
       it(`responds with 404`, () => {
         const profileId = 123456
         return supertest(app)
-          .get(`/profiles/${profileId}`)
+          .get(`/api/profiles/${profileId}`)
           .expect(404, { error: { message: `Profile doesn't exist` } })
       })
     })
@@ -86,17 +86,17 @@ describe('Profiles Endpoints', function() {
           .insert(testProfiles)
       })
 
-      it('GET /profiles responds with 200 and all of the profiles', () => {
+      it('GET /api/profiles responds with 200 and all of the profiles', () => {
         return supertest(app)
-          .get('/profiles')
+          .get('/api/profiles')
           .expect(200, testProfiles)
       })
 
-      it('GET /profiles/:profile_id responds with 200 and the specified profile', () => {
+      it('GET /api/profiles/:profile_id responds with 200 and the specified profile', () => {
         const profileId = 2
         const expectedProfile = testProfiles[profileId - 1]
         return supertest(app)
-          .get(`/profiles/${profileId}`)
+          .get(`/api/profiles/${profileId}`)
           .expect(200, expectedProfile)
       })
     })
@@ -120,7 +120,7 @@ describe('Profiles Endpoints', function() {
       
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get(`/profiles/${maliciousProfile.id}`)
+          .get(`/api/profiles/${maliciousProfile.id}`)
           .expect(200)
           .expect(res => {
             expect(res.body.name).to.eql('Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;')
@@ -134,7 +134,7 @@ describe('Profiles Endpoints', function() {
     })
   })
 
-  describe(`POST /profiles`, () => {
+  describe(`POST /api/profiles`, () => {
     it(`creates an profile, responding with 201 and the new profile`, function() {
       this.retries(3)
       const newProfile = {
@@ -148,7 +148,7 @@ describe('Profiles Endpoints', function() {
       }
       
       return supertest(app)
-        .post('/profiles')
+        .post('/api/profiles')
         .send(newProfile)
         .expect(201)
         .expect(res => {
@@ -160,14 +160,14 @@ describe('Profiles Endpoints', function() {
           expect(res.body.get_call).to.eql(newProfile.get_call)
           expect(res.body.get_newsletter).to.eql(newProfile.get_newsletter)
           expect(res.body).to.have.property('id')
-          expect(res.headers.location).to.eql(`/profiles/${res.body.id}`)
+          expect(res.headers.location).to.eql(`/api/profiles/${res.body.id}`)
           const expected = new Date().toLocaleString()
           const actual = new Date(res.body.date_created).toLocaleString()
           expect(actual).to.eql(expected)
         })
         .then(postRes =>
           supertest(app)
-            .get(`/profiles/${postRes.body.id}`)
+            .get(`/api/profiles/${postRes.body.id}`)
             .expect(postRes.body)
         )
     })
@@ -189,7 +189,7 @@ describe('Profiles Endpoints', function() {
         delete newProfile[field]
 
         return supertest(app)
-          .post('/profiles')
+          .post('/api/profiles')
           .send(newProfile)
           .expect(400, {
             error: { message: `Missing '${field}' in request body` }
@@ -200,7 +200,7 @@ describe('Profiles Endpoints', function() {
     it('removes XSS attack content from response', () => {
       const { maliciousProfile, expectedProfile } = makeMaliciousProfile()
       return supertest(app)
-        .post(`/profiles`)
+        .post(`/api/profiles`)
         .send(maliciousProfile)
         .expect(201)
         .expect(res => {
@@ -215,12 +215,12 @@ describe('Profiles Endpoints', function() {
     })
   })
 
-  describe(`DELETE /profiles/:profile_id`, () => {
+  describe(`DELETE /api/profiles/:profile_id`, () => {
     context(`Given no profiles`, () => {
       it(`responds with 404`, () => {
         const profileId = 123456
         return supertest(app)
-          .delete(`/profiles/${profileId}`)
+          .delete(`/api/profiles/${profileId}`)
           .expect(404, { error: { message: `Profile doesn't exist` } })
       })
     })
@@ -238,13 +238,58 @@ describe('Profiles Endpoints', function() {
         const idToRemove = 2
         const expectedProfiles = testProfiles.filter(profile => profile.id !== idToRemove)
         return supertest(app)
-          .delete(`/profiles/${idToRemove}`)
+          .delete(`/api/profiles/${idToRemove}`)
           .expect(204)
           .then(res =>
             supertest(app)
-              .get(`/profiles`)
+              .get(`/api/profiles`)
               .expect(expectedProfiles)
          )
+      })
+    })
+  })
+
+  describe.only(`PATCH /api/profiles/:profile_id`, () => {
+    context(`Given no profiles`, () => {
+      it(`responds with 404`, () => {
+        const profileId = 123456
+        return supertest(app)
+          .patch(`/api/profiles/${profileId}`)
+          .expect(404, { error: { message: `Profile doesn't exist` } })
+      })
+    })
+
+    context('Given there are profiles in the database', () => {
+      const testProfiles = makeProfilesArray()
+      
+      beforeEach('insert profiles', () => {
+        return db
+          .into('ff_profiles')
+          .insert(testProfiles)
+      })
+      
+      it('responds with 204 and updates the profile', () => {
+        const idToUpdate = 2
+        const updateProfile = {
+          name: 'updated user name',
+          email: 'updated@email.com',
+          life_insurance_goal: '$1000000',
+          get_newsletter: true,
+          date_modified: new Date().toISOString(),
+        }
+        const expectedProfile = {
+          ...testProfiles[idToUpdate - 1],
+          ...updateProfile
+        }
+        return supertest(app)
+          .patch(`/api/profiles/${idToUpdate}`)
+          .send(updateProfile)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/profiles/${idToUpdate}`)
+              .expect(expectedProfile)
+          )
       })
     })
   })

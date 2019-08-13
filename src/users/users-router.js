@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const xss = require('xss')
 const UsersService = require('./users-service')
@@ -42,7 +43,7 @@ usersRouter
       .then(user => {
         res
           .status(201)
-          .location(`/users/${user.id}`)
+          .location(path.posix.join(req.originalUrl, `/${user.id}`))
           .json(serializeUser(user))
       })
       .catch(next)
@@ -75,6 +76,19 @@ usersRouter
       req.params.user_id
     )
       .then(() => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
+  .patch(jsonParser, (req, res, next) => {
+    const { email, password, date_modified } = req.body
+    const userToUpdate = { email, password, date_modified }
+    UsersService.updateUser(
+      req.app.get('db'),
+      req.params.user_id,
+      userToUpdate
+    )
+      .then(numRowsAffected => {
         res.status(204).end()
       })
       .catch(next)

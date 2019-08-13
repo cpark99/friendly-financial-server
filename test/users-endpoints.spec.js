@@ -20,11 +20,11 @@ describe('Users Endpoints', function() {
 
   afterEach('cleanup', () => db('ff_users').truncate())
 
-  describe(`GET /users`, () => {
+  describe(`GET /api/users`, () => {
     context(`Given no users`, () => {
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
-          .get('/users')
+          .get('/api/users')
           .expect(200, [])
       })
     })
@@ -38,9 +38,9 @@ describe('Users Endpoints', function() {
           .insert(testUsers)
       })
   
-      it('GET /users responds with 200 and all of the users', () => {
+      it('GET /api/users responds with 200 and all of the users', () => {
         return supertest(app)
-          .get('/users')
+          .get('/api/users')
           .expect(200, testUsers)
       })
     })
@@ -56,7 +56,7 @@ describe('Users Endpoints', function() {
 
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get(`/users`)
+          .get(`/api/users`)
           .expect(200)
           .expect(res => {
             expect(res.body[0].email).to.eql(expectedUser.email)
@@ -66,12 +66,12 @@ describe('Users Endpoints', function() {
     })
   })
   
-  describe(`GET /users/:user_id`, () => {
+  describe(`GET /api/users/:user_id`, () => {
     context(`Given no users`, () => {
       it(`responds with 404`, () => {
         const userId = 123456
         return supertest(app)
-          .get(`/users/${userId}`)
+          .get(`/api/users/${userId}`)
           .expect(404, { error: { message: `User doesn't exist` } })
       })
     })
@@ -85,17 +85,17 @@ describe('Users Endpoints', function() {
           .insert(testUsers)
       })
 
-      it('GET /users responds with 200 and all of the users', () => {
+      it('GET /api/users responds with 200 and all of the users', () => {
         return supertest(app)
-          .get('/users')
+          .get('/api/users')
           .expect(200, testUsers)
       })
   
-      it('GET /users/:user_id responds with 200 and the specified article', () => {
+      it('GET /api/users/:user_id responds with 200 and the specified article', () => {
         const userId = 2
         const expectedUser = testUsers[userId - 1]
         return supertest(app)
-          .get(`/users/${userId}`)
+          .get(`/api/users/${userId}`)
           .expect(200, expectedUser)
       })
     })
@@ -115,7 +115,7 @@ describe('Users Endpoints', function() {
       
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get(`/users/${maliciousUser.id}`)
+          .get(`/api/users/${maliciousUser.id}`)
           .expect(200)
           .expect(res => {
             expect(res.body.email).to.eql('Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;')
@@ -125,7 +125,7 @@ describe('Users Endpoints', function() {
     })
   })
 
-  describe(`POST /users`, () => {
+  describe(`POST /api/users`, () => {
     it(`creates an user, responding with 201 and the new user`, function() {
       this.retries(3)
       const newUser = {
@@ -134,21 +134,21 @@ describe('Users Endpoints', function() {
       }
 
       return supertest(app)
-        .post('/users')
+        .post('/api/users')
         .send(newUser)
         .expect(201)
         .expect(res => {
           expect(res.body.email).to.eql(newUser.email)
           expect(res.body.password).to.eql(newUser.password)
           expect(res.body).to.have.property('id')
-          expect(res.headers.location).to.eql(`/users/${res.body.id}`)
+          expect(res.headers.location).to.eql(`/api/users/${res.body.id}`)
           const expected = new Date().toLocaleString()
           const actual = new Date(res.body.date_created).toLocaleString()
           expect(actual).to.eql(expected)
         })
         .then(postRes =>
           supertest(app)
-            .get(`/users/${postRes.body.id}`)
+            .get(`/api/users/${postRes.body.id}`)
             .expect(postRes.body)
         )
     })
@@ -165,7 +165,7 @@ describe('Users Endpoints', function() {
         delete newUser[field]
 
         return supertest(app)
-          .post('/users')
+          .post('/api/users')
           .send(newUser)
           .expect(400, {
             error: { message: `Missing '${field}' in request body` }
@@ -176,7 +176,7 @@ describe('Users Endpoints', function() {
     it('removes XSS attack content from response', () => {
       const { maliciousUser, expectedUser } = makeMaliciousUser()
       return supertest(app)
-        .post(`/users`)
+        .post(`/api/users`)
         .send(maliciousUser)
         .expect(201)
         .expect(res => {
@@ -186,12 +186,12 @@ describe('Users Endpoints', function() {
     })
   })
 
-  describe(`DELETE /users/:user_id`, () => {
+  describe(`DELETE /api/users/:user_id`, () => {
     context(`Given no users`, () => {
       it(`responds with 404`, () => {
         const userId = 123456
         return supertest(app)
-          .delete(`/users/${userId}`)
+          .delete(`/api/users/${userId}`)
           .expect(404, { error: { message: `User doesn't exist` } })
       })
     })
@@ -209,13 +209,56 @@ describe('Users Endpoints', function() {
         const idToRemove = 2
         const expectedUsers = testUsers.filter(user => user.id !== idToRemove)
         return supertest(app)
-          .delete(`/users/${idToRemove}`)
+          .delete(`/api/users/${idToRemove}`)
           .expect(204)
           .then(res =>
             supertest(app)
-              .get(`/users`)
+              .get(`/api/users`)
               .expect(expectedUsers)
          )
+      })
+    })
+  })
+
+  describe.only(`PATCH /api/users/:user_id`, () => {
+    context(`Given no users`, () => {
+      it(`responds with 404`, () => {
+        const userId = 123456
+        return supertest(app)
+          .patch(`/api/users/${userId}`)
+          .expect(404, { error: { message: `User doesn't exist` } })
+      })
+    })
+
+    context('Given there are users in the database', () => {
+      const testUsers = makeUsersArray()
+      
+      beforeEach('insert users', () => {
+        return db
+          .into('ff_users')
+          .insert(testUsers)
+      })
+      
+      it('responds with 204 and updates the user', () => {
+        const idToUpdate = 2
+        const updateUser = {
+          email: 'updated user email',
+          password: 'Password',
+          date_modified: new Date().toISOString(),
+        }
+        const expectedUser = {
+          ...testUsers[idToUpdate - 1],
+          ...updateUser
+        }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send(updateUser)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/users/${idToUpdate}`)
+              .expect(expectedUser)
+          )
       })
     })
   })
