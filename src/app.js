@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require('./config')
+const UsersService = require('./users-service')
+const ProfilesService = require('./profiles-service')
 
 const app = express();
 
@@ -14,11 +16,21 @@ app.use(helmet());
 app.use(cors());
 
 app.get('/users', (req,res,next) => {
-  res.send('All users')
+  const knexInstance = req.app.get('db')
+  UsersService.getAllUsers(knexInstance)
+    .then(users => {
+      res.json(users)
+    })
+    .catch(next)
 })
 
 app.get('/profiles', (req,res,next) => {
-  res.send('All profiles')
+  const knexInstance = req.app.get('db')
+  ProfilesService.getAllProfiles(knexInstance)
+    .then(profiles => {
+      res.json(profiles)
+    })
+    .catch(next)
 })
 
 app.get("/", (req, res) => {
