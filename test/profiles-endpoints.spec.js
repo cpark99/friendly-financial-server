@@ -249,7 +249,7 @@ describe('Profiles Endpoints', function() {
     })
   })
 
-  describe.only(`PATCH /api/profiles/:profile_id`, () => {
+  describe(`PATCH /api/profiles/:profile_id`, () => {
     context(`Given no profiles`, () => {
       it(`responds with 404`, () => {
         const profileId = 123456
@@ -302,6 +302,31 @@ describe('Profiles Endpoints', function() {
               message: `Request body must contain either 'name', 'email', 'phone', 'life_insurance_goal', 'get_email', 'get_call', 'get_newsletter', or 'date_modified'`
             }
           })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updateProfile = {
+          name: 'updated profile name',
+        }
+        const expectedProfile = {
+          ...testProfiles[idToUpdate - 1],
+          ...updateProfile
+        }
+      
+        return supertest(app)
+          .patch(`/api/profiles/${idToUpdate}`)
+          .send({
+            ...updateProfile,
+            fieldToIgnore: 'should not be in GET response'
+          })
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/profiles/${idToUpdate}`)
+              .expect(expectedProfile)
+          )
+        
       })
     })
   })

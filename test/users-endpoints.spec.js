@@ -220,7 +220,7 @@ describe('Users Endpoints', function() {
     })
   })
 
-  describe.only(`PATCH /api/users/:user_id`, () => {
+  describe(`PATCH /api/users/:user_id`, () => {
     context(`Given no users`, () => {
       it(`responds with 404`, () => {
         const userId = 123456
@@ -271,6 +271,31 @@ describe('Users Endpoints', function() {
               message: `Request body must contain either 'email', 'password', or 'date_modified'`
             }
           })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updateUser = {
+          email: 'updated user email',
+        }
+        const expectedUser = {
+          ...testUsers[idToUpdate - 1],
+          ...updateUser
+        }
+      
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in GET response'
+          })
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/users/${idToUpdate}`)
+              .expect(expectedUser)
+          )
+        
       })
     })
   })
