@@ -3,7 +3,7 @@ CREATE TABLE ff_profiles (
   email TEXT REFERENCES ff_users(email) ON DELETE SET NULL UNIQUE,
   name TEXT NOT NULL,
   phone TEXT NOT NULL,
-  life_insurance_goal TEXT,
+  life_insurance_goal TEXT DEFAULT 'unset',
   get_email BOOLEAN NOT NULL,
   get_call BOOLEAN NOT NULL,
   get_newsletter BOOLEAN NOT NULL,
