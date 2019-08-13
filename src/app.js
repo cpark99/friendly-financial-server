@@ -4,8 +4,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require('./config')
-const UsersService = require('./users-service')
-const ProfilesService = require('./profiles-service')
+const usersRouter = require('./users/users-router')
+const profilesRouter = require('./profiles/profiles-router')
 
 const app = express();
 
@@ -15,51 +15,9 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 
-app.get('/users', (req,res,next) => {
-  const knexInstance = req.app.get('db')
-  UsersService.getAllUsers(knexInstance)
-    .then(users => {
-      res.json(users)
-    })
-    .catch(next)
-})
+app.use('/users', usersRouter)
 
-app.get('/users/:user_id', (req, res, next) => {
-  const knexInstance = req.app.get('db')
-  UsersService.getById(knexInstance, req.params.user_id)
-    .then(user => {
-      if (!user) {
-        return res.status(404).json({
-          error: { message: `User doesn't exist` }
-        })
-      }
-      res.json(user)
-    })
-    .catch(next)
-})
-
-app.get('/profiles', (req,res,next) => {
-  const knexInstance = req.app.get('db')
-  ProfilesService.getAllProfiles(knexInstance)
-    .then(profiles => {
-      res.json(profiles)
-    })
-    .catch(next)
-})
-
-app.get('/profiles/:profile_id', (req, res, next) => {
-  const knexInstance = req.app.get('db')
-  ProfilesService.getById(knexInstance, req.params.profile_id)
-    .then(profile => {
-      if (!profile) {
-        return res.status(404).json({
-          error: { message: `Profile doesn't exist` }
-        })
-      }
-      res.json(profile)
-    })
-    .catch(next)
-})
+app.use('/profiles', profilesRouter)
 
 app.get("/", (req, res) => {
   res.send("Hello, world!");

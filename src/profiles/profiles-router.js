@@ -1,0 +1,72 @@
+const express = require('express')
+const xss = require('xss')
+const ProfilesService = require('./profiles-service')
+
+const profilesRouter = express.Router()
+const jsonParser = express.json()
+
+const serializeProfile = profile => ({
+  id: profile.id,
+  name: xss(profile.name),
+  email: xss(profile.email),
+  phone: xss(profile.phone),
+  life_insurance_goal: profile.life_insurance_goal,
+  get_email: profile.get_email,
+  get_call: profile.get_call,
+  get_newsletter: profile.get_newsletter,
+  date_created: profile.date_created,
+  date_modified: profile.date_modified
+})
+
+profilesRouter
+  .route('/')
+  .get((req, res, next) => {
+    const knexInstance = req.app.get('db')
+    ProfilesService.getAllProfiles(knexInstance)
+      .then(profiles => {
+        res.json(profiles)
+      })
+      .catch(next)
+  })
+  .post(jsonParser, (req, res, next) => {
+    const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter } = req.body
+    const newProfile = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter }
+
+    for (const [key, value] of Object.entries(newProfile)) {
+      if (value == null) {
+        return res.status(400).json({
+          error: { message: `Missing '${key}' in request body` }
+        })
+      }
+    }
+
+    ProfilesService.insertProfile(
+      req.app.get('db'),
+      newProfile
+    )
+      .then(profile => {
+        res
+          .status(201)
+          .location(`/profiles/${profile.id}`)
+          .json(profile)
+      })
+      .catch(next)
+  })
+
+profilesRouter
+  .route('/:profile_id')
+  .get((req, res, next) => {
+    const knexInstance = req.app.get('db')
+    ProfilesService.getById(knexInstance, req.params.profile_id)
+      .then(profile => {
+        if (!profile) {
+          return res.status(404).json({
+            error: { message: `Profile doesn't exist` }
+          })
+        }
+        res.json(serializeProfile(profile))
+      })
+      .catch(next)
+  })
+
+module.exports = profilesRouter

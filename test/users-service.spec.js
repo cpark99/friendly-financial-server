@@ -1,4 +1,4 @@
-const UsersService = require('../src/users-service')
+const UsersService = require('../src/users/users-service')
 const knex = require('knex')
 
 describe(`Users service object`, function() {

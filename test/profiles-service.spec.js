@@ -1,4 +1,4 @@
-const ProfilesService = require('../src/profiles-service')
+const ProfilesService = require('../src/profiles/profiles-service')
 const knex = require('knex')
 
 describe(`Profiles service object`, function() {

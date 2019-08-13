@@ -7,7 +7,7 @@ function makeProfilesArray() {
       name: 'tester',
       email: 'test@tester.com',
       phone: '(888)888-8888',
-      life_insurance_goal: '1000000',
+      life_insurance_goal: '',
       get_email: true,
       get_call: true,
       get_newsletter: true
@@ -19,7 +19,7 @@ function makeProfilesArray() {
       name: 'tester2',
       email: 'test2@tester.com',
       phone: '(888)888-8889',
-      life_insurance_goal: '100000',
+      life_insurance_goal: '',
       get_email: true,
       get_call: true,
       get_newsletter: false
@@ -31,7 +31,7 @@ function makeProfilesArray() {
       name: 'tester3',
       email: 'test3@tester.com',
       phone: '(888)888-8887',
-      life_insurance_goal: '500000',
+      life_insurance_goal: '',
       get_email: false,
       get_call: true,
       get_newsletter: true
@@ -43,7 +43,7 @@ function makeProfilesArray() {
       name: 'tester4',
       email: 'test4@tester.com',
       phone: '(888)888-8886',
-      life_insurance_goal: '150000',
+      life_insurance_goal: '',
       get_email: true,
       get_call: false,
       get_newsletter: true
@@ -51,6 +51,35 @@ function makeProfilesArray() {
   ];
 }
 
+function makeMaliciousProfile() {
+  const maliciousProfile = {
+    id: 911,
+    date_created: new Date().toISOString(),
+    name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+    email: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+    phone: 'phone',
+    life_insurance_goal: '',
+    get_email: true,
+    get_call: true,
+    get_newsletter: true
+  }
+  const expectedProfile = {
+    ...maliciousProfile,
+    name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+    email: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+    phone: 'phone',
+    life_insurance_goal: '',
+    get_email: true,
+    get_call: true,
+    get_newsletter: true
+  }
+  return {
+    maliciousProfile,
+    expectedProfile,
+  }
+}
+
 module.exports = {
   makeProfilesArray,
+  makeMaliciousProfile,
 }
