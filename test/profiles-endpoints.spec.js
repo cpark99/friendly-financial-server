@@ -215,7 +215,16 @@ describe('Profiles Endpoints', function() {
     })
   })
 
-  describe.only(`DELETE /profiles/:profile_id`, () => {
+  describe(`DELETE /profiles/:profile_id`, () => {
+    context(`Given no profiles`, () => {
+      it(`responds with 404`, () => {
+        const profileId = 123456
+        return supertest(app)
+          .delete(`/profiles/${profileId}`)
+          .expect(404, { error: { message: `Profile doesn't exist` } })
+      })
+    })
+
     context('Given there are profiles in the database', () => {
       const testProfiles = makeProfilesArray()
     

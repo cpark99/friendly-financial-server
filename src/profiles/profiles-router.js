@@ -55,18 +55,24 @@ profilesRouter
 
 profilesRouter
   .route('/:profile_id')
-  .get((req, res, next) => {
-    const knexInstance = req.app.get('db')
-    ProfilesService.getById(knexInstance, req.params.profile_id)
+  .all((req, res, next) => {
+    ProfilesService.getById(
+      req.app.get('db'),
+      req.params.profile_id
+    )
       .then(profile => {
         if (!profile) {
           return res.status(404).json({
             error: { message: `Profile doesn't exist` }
           })
         }
-        res.json(serializeProfile(profile))
+        res.profile = profile // save the profile for the next middleware
+        next() // don't forget to call next so the next middleware happens!
       })
       .catch(next)
+  })
+  .get((req, res, next) => {
+    res.json(serializeProfile(res.profile))
   })
   .delete((req, res, next) => {
     ProfilesService.deleteProfile(

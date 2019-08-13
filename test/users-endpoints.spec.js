@@ -186,7 +186,16 @@ describe('Users Endpoints', function() {
     })
   })
 
-  describe.only(`DELETE /users/:user_id`, () => {
+  describe(`DELETE /users/:user_id`, () => {
+    context(`Given no users`, () => {
+      it(`responds with 404`, () => {
+        const userId = 123456
+        return supertest(app)
+          .delete(`/users/${userId}`)
+          .expect(404, { error: { message: `User doesn't exist` } })
+      })
+    })
+
     context('Given there are users in the database', () => {
       const testUsers = makeUsersArray()
     
