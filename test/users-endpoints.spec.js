@@ -91,7 +91,7 @@ describe('Users Endpoints', function() {
           .expect(200, testUsers)
       })
   
-      it('GET /api/users/:user_id responds with 200 and the specified article', () => {
+      it('GET /api/users/:user_id responds with 200 and the specified user', () => {
         const userId = 2
         const expectedUser = testUsers[userId - 1]
         return supertest(app)

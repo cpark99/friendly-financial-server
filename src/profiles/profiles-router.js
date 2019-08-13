@@ -25,7 +25,7 @@ profilesRouter
     const knexInstance = req.app.get('db')
     ProfilesService.getAllProfiles(knexInstance)
       .then(profiles => {
-        res.json(profiles)
+        res.json(profiles.map(serializeProfile))
       })
       .catch(next)
   })
@@ -49,7 +49,7 @@ profilesRouter
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${profile.id}`))
-          .json(profile)
+          .json(serializeProfile(profile))
       })
       .catch(next)
   })

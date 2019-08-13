@@ -2,6 +2,7 @@ const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
 const { makeProfilesArray, makeMaliciousProfile } = require('./profiles.fixtures')
+const { makeUsersArray } = require('./users.fixtures')
 
 describe('Profiles Endpoints', function() {
   let db
@@ -16,9 +17,9 @@ describe('Profiles Endpoints', function() {
 
   after('disconnect from db', () => db.destroy())
 
-  before('clean the table', () => db('ff_profiles').truncate())
+  before('clean the table', () => db.raw('TRUNCATE ff_profiles, ff_users RESTART IDENTITY CASCADE'))
 
-  afterEach('cleanup', () => db('ff_profiles').truncate())
+  afterEach('cleanup', () => db.raw('TRUNCATE ff_profiles, ff_users RESTART IDENTITY CASCADE'))
 
   describe(`GET /api/profiles`, () => {
     context(`Given no profiles`, () => {
@@ -30,12 +31,18 @@ describe('Profiles Endpoints', function() {
     })
 
     context('Given there are profiles in the database', () => {
+      const testUsers = makeUsersArray();
       const testProfiles = makeProfilesArray()
       
       beforeEach('insert profiles', () => {
         return db
-          .into('ff_profiles')
-          .insert(testProfiles)
+          .into('ff_users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('ff_profiles')
+              .insert(testProfiles)
+          })
       })
   
       it('GET /api/profiles responds with 200 and all of the profiles', () => {
@@ -46,12 +53,18 @@ describe('Profiles Endpoints', function() {
     })
 
     context(`Given an XSS attack profile`, () => {
+      const testUsers = makeUsersArray();
       const { maliciousProfile, expectedProfile } = makeMaliciousProfile()
 
       beforeEach('insert malicious profile', () => {
         return db
-          .into('ff_profiles')
-          .insert([ maliciousProfile ])
+          .into('ff_users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('ff_profiles')
+              .insert([ maliciousProfile ])
+          }) 
       })
 
       it('removes XSS attack content', () => {
@@ -78,18 +91,18 @@ describe('Profiles Endpoints', function() {
     })
 
     context('Given there are profiles in the database', () => {
+      const testUsers = makeUsersArray();
       const testProfiles = makeProfilesArray()
       
       beforeEach('insert profiles', () => {
         return db
-          .into('ff_profiles')
-          .insert(testProfiles)
-      })
-
-      it('GET /api/profiles responds with 200 and all of the profiles', () => {
-        return supertest(app)
-          .get('/api/profiles')
-          .expect(200, testProfiles)
+          .into('ff_users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('ff_profiles')
+              .insert(testProfiles)
+          })
       })
 
       it('GET /api/profiles/:profile_id responds with 200 and the specified profile', () => {
@@ -102,20 +115,18 @@ describe('Profiles Endpoints', function() {
     })
 
     context(`Given an XSS attack profile`, () => {
-      const maliciousProfile = {
-        id: 911,
-        name: 'Naughty naughty very naughty <script>alert("xss");</script>',
-        email: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-        phone: 'phone',
-        get_email: true,
-        get_call: true,
-        get_newsletter: true
-      }
+      const testUsers = makeUsersArray();
+      const { maliciousProfile, expectedProfile } = makeMaliciousProfile()
       
       beforeEach('insert malicious profile', () => {
         return db
-          .into('ff_profiles')
-          .insert([ maliciousProfile ])
+          .into('ff_users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('ff_profiles')
+              .insert([ maliciousProfile ])
+          })  
       })
       
       it('removes XSS attack content', () => {
@@ -123,18 +134,25 @@ describe('Profiles Endpoints', function() {
           .get(`/api/profiles/${maliciousProfile.id}`)
           .expect(200)
           .expect(res => {
-            expect(res.body.name).to.eql('Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;')
-            expect(res.body.email).to.eql(`Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`)
-            expect(res.body.phone).to.eql(`phone`)
-            expect(res.body.get_email).to.eql(true)
-            expect(res.body.get_call).to.eql(true)
-            expect(res.body.get_newsletter).to.eql(true)
+            expect(res.body.name).to.eql(expectedProfile.name)
+            expect(res.body.email).to.eql(expectedProfile.email)
+            expect(res.body.phone).to.eql(expectedProfile.phone)
+            expect(res.body.get_email).to.eql(expectedProfile.get_email)
+            expect(res.body.get_call).to.eql(expectedProfile.get_call)
+            expect(res.body.get_newsletter).to.eql(expectedProfile.get_newsletter)
           })
       })
     })
   })
 
   describe(`POST /api/profiles`, () => {
+    const testUsers = makeUsersArray();
+    beforeEach('insert malicious profile', () => {
+      return db
+        .into('ff_users')
+        .insert(testUsers) 
+    })
+
     it(`creates an profile, responding with 201 and the new profile`, function() {
       this.retries(3)
       const newProfile = {
@@ -226,12 +244,18 @@ describe('Profiles Endpoints', function() {
     })
 
     context('Given there are profiles in the database', () => {
+      const testUsers = makeUsersArray();
       const testProfiles = makeProfilesArray()
     
       beforeEach('insert profiles', () => {
         return db
-          .into('ff_profiles')
-          .insert(testProfiles)
+          .into('ff_users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('ff_profiles')
+              .insert(testProfiles)
+          })
       })
       
       it('responds with 204 and removes the profile', () => {
@@ -260,12 +284,18 @@ describe('Profiles Endpoints', function() {
     })
 
     context('Given there are profiles in the database', () => {
+      const testUsers = makeUsersArray();
       const testProfiles = makeProfilesArray()
       
       beforeEach('insert profiles', () => {
         return db
-          .into('ff_profiles')
-          .insert(testProfiles)
+          .into('ff_users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('ff_profiles')
+              .insert(testProfiles)
+          })
       })
       
       it('responds with 204 and updates the profile', () => {
@@ -326,7 +356,6 @@ describe('Profiles Endpoints', function() {
               .get(`/api/profiles/${idToUpdate}`)
               .expect(expectedProfile)
           )
-        
       })
     })
   })

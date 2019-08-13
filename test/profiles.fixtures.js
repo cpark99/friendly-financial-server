@@ -65,13 +65,9 @@ function makeMaliciousProfile() {
   }
   const expectedProfile = {
     ...maliciousProfile,
-    name: 'Naughty naughty very naughty <script>alert("xss");</script>',
-    email: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-    phone: 'phone',
-    life_insurance_goal: '',
-    get_email: true,
-    get_call: true,
-    get_newsletter: true
+    name: 'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
+    email: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`,
+    phone: 'phone'
   }
   return {
     maliciousProfile,
