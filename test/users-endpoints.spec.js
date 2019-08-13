@@ -185,4 +185,29 @@ describe('Users Endpoints', function() {
         })
     })
   })
+
+  describe.only(`DELETE /users/:user_id`, () => {
+    context('Given there are users in the database', () => {
+      const testUsers = makeUsersArray()
+    
+      beforeEach('insert users', () => {
+        return db
+          .into('ff_users')
+          .insert(testUsers)
+      })
+      
+      it('responds with 204 and removes the user', () => {
+        const idToRemove = 2
+        const expectedUsers = testUsers.filter(user => user.id !== idToRemove)
+        return supertest(app)
+          .delete(`/users/${idToRemove}`)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/users`)
+              .expect(expectedUsers)
+         )
+      })
+    })
+  })
 })

@@ -214,4 +214,29 @@ describe('Profiles Endpoints', function() {
         })
     })
   })
+
+  describe.only(`DELETE /profiles/:profile_id`, () => {
+    context('Given there are profiles in the database', () => {
+      const testProfiles = makeProfilesArray()
+    
+      beforeEach('insert profiles', () => {
+        return db
+          .into('ff_profiles')
+          .insert(testProfiles)
+      })
+      
+      it('responds with 204 and removes the profile', () => {
+        const idToRemove = 2
+        const expectedProfiles = testProfiles.filter(profile => profile.id !== idToRemove)
+        return supertest(app)
+          .delete(`/profiles/${idToRemove}`)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/profiles`)
+              .expect(expectedProfiles)
+         )
+      })
+    })
+  })
 })

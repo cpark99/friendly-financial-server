@@ -68,5 +68,15 @@ profilesRouter
       })
       .catch(next)
   })
+  .delete((req, res, next) => {
+    ProfilesService.deleteProfile(
+      req.app.get('db'),
+      req.params.profile_id
+    )
+      .then(() => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
 
 module.exports = profilesRouter
