@@ -83,6 +83,16 @@ usersRouter
   .patch(jsonParser, (req, res, next) => {
     const { email, password, date_modified } = req.body
     const userToUpdate = { email, password, date_modified }
+
+    const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message: `Request body must contain either 'email', 'password', or 'date_modified'`
+        }
+      })
+    }
+
     UsersService.updateUser(
       req.app.get('db'),
       req.params.user_id,

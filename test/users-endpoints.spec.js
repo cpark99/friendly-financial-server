@@ -260,6 +260,18 @@ describe('Users Endpoints', function() {
               .expect(expectedUser)
           )
       })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 2
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({ irrelevantField: 'foo' })
+          .expect(400, {
+            error: {
+              message: `Request body must contain either 'email', 'password', or 'date_modified'`
+            }
+          })
+      })
     })
   })
 })

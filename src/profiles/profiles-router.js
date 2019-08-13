@@ -88,6 +88,17 @@ profilesRouter
   .patch(jsonParser, (req, res, next) => {
     const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_modified } = req.body
     const profileToUpdate = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_modified }
+
+    const numberOfValues = Object.values(profileToUpdate).filter(Boolean).length
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message: `Request body must contain either 'name', 'email', 'phone', 'life_insurance_goal', 'get_email', 'get_call', 'get_newsletter', or 'date_modified'`
+        }
+      })
+    }
+
+
     ProfilesService.updateProfile(
       req.app.get('db'),
       req.params.profile_id,
