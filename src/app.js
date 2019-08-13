@@ -24,11 +24,29 @@ app.get('/users', (req,res,next) => {
     .catch(next)
 })
 
+app.get('/users/:user_id', (req, res, next) => {
+  const knexInstance = req.app.get('db')
+  UsersService.getById(knexInstance, req.params.user_id)
+    .then(user => {
+      res.json(user)
+    })
+    .catch(next)
+})
+
 app.get('/profiles', (req,res,next) => {
   const knexInstance = req.app.get('db')
   ProfilesService.getAllProfiles(knexInstance)
     .then(profiles => {
       res.json(profiles)
+    })
+    .catch(next)
+})
+
+app.get('/profiles/:profile_id', (req, res, next) => {
+  const knexInstance = req.app.get('db')
+  ProfilesService.getById(knexInstance, req.params.profile_id)
+    .then(profile => {
+      res.json(profile)
     })
     .catch(next)
 })
