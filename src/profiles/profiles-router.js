@@ -11,7 +11,7 @@ const serializeProfile = profile => ({
   name: xss(profile.name),
   email: xss(profile.email),
   phone: xss(profile.phone),
-  life_insurance_goal: profile.life_insurance_goal,
+  life_insurance_goal: xss(profile.life_insurance_goal),
   get_email: profile.get_email,
   get_call: profile.get_call,
   get_newsletter: profile.get_newsletter,
