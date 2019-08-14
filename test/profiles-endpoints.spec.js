@@ -44,6 +44,14 @@ describe('Profiles Endpoints', function() {
           .get(`/api/profiles/123`)
           .expect(401, { error: `Missing basic token` })
       })
+
+      it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
+        const userNoCreds = { email: '', password: '' }
+        return supertest(app)
+          .get(`/api/profiles/123`)
+          .set('Authorization', makeAuthHeader(userNoCreds))
+          .expect(401, { error: `Unauthorized request` })
+      })
     })
   })
 
