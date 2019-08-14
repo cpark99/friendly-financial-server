@@ -2,6 +2,7 @@ const path = require('path')
 const express = require('express')
 const xss = require('xss')
 const ProfilesService = require('./profiles-service')
+const { requireAuth } = require('../middleware/basic-auth')
 
 const profilesRouter = express.Router()
 const jsonParser = express.json()
@@ -56,6 +57,7 @@ profilesRouter
 
 profilesRouter
   .route('/:profile_id')
+  .all(requireAuth)
   .all((req, res, next) => {
     ProfilesService.getById(
       req.app.get('db'),
@@ -64,7 +66,7 @@ profilesRouter
       .then(profile => {
         if (!profile) {
           return res.status(404).json({
-            error: { message: `Profile doesn't exist` }
+            error: `profile doesn't exist` 
           })
         }
         res.profile = profile // save the profile for the next middleware
