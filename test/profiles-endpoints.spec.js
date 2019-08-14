@@ -52,6 +52,22 @@ describe('Profiles Endpoints', function() {
           .set('Authorization', makeAuthHeader(userNoCreds))
           .expect(401, { error: `Unauthorized request` })
       })
+
+      it(`responds 401 'Unauthorized request' when invalid user`, () => {
+        const userInvalidCreds = { email: 'user-not', password: 'existy' }
+        return supertest(app)
+          .get(`/api/profiles/1`)
+          .set('Authorization', makeAuthHeader(userInvalidCreds))
+          .expect(401, { error: `Unauthorized request` })
+      })
+
+      it(`responds 401 'Unauthorized request' when invalid password`, () => {
+        const userInvalidPass = { email: testUsers[0].email, password: 'wrong' }
+        return supertest(app)
+          .get(`/api/profiles/1`)
+          .set('Authorization', makeAuthHeader(userInvalidPass))
+          .expect(401, { error: `Unauthorized request` })
+      })
     })
   })
 
@@ -119,6 +135,7 @@ describe('Profiles Endpoints', function() {
     context(`Given no profiles`, () => {
       beforeEach(() =>
       helpers.seedUsers(db, testUsers))
+
       it(`responds with 404`, () => {
         const profileId = 123456
         return supertest(app)
