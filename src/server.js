@@ -1,3 +1,5 @@
+const debug = require('debug');
+
 const knex = require('knex')
 const app = require('./app')
 const { PORT, DB_URL } = require('./config')

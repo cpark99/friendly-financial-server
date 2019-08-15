@@ -1,3 +1,5 @@
+const debug = require('debug');
+
 const path = require('path')
 const express = require('express')
 const xss = require('xss')
@@ -12,7 +14,7 @@ const serializeProfile = profile => ({
   name: xss(profile.name),
   email: xss(profile.email),
   phone: xss(profile.phone),
-  life_insurance_goal: xss(profile.life_insurance_goal),
+  life_insurance_goal: profile.life_insurance_goal,
   get_email: profile.get_email,
   get_call: profile.get_call,
   get_newsletter: profile.get_newsletter,
@@ -36,6 +38,7 @@ profilesRouter
 
     for (const [key, value] of Object.entries(newProfile)) {
       if (value == null) {
+        console.log(key)
         return res.status(400).json({
           error: { message: `Missing '${key}' in request body` }
         })
@@ -69,6 +72,7 @@ profilesRouter
             error: `profile doesn't exist` 
           })
         }
+        debugger;
         res.profile = profile // save the profile for the next middleware
         next() // don't forget to call next so the next middleware happens!
       })
@@ -76,6 +80,7 @@ profilesRouter
   })
   .get((req, res, next) => {
     res.json(serializeProfile(res.profile))
+    console.log(`res.profile: ${res.profile}`)
   })
   .delete((req, res, next) => {
     ProfilesService.deleteProfile(
@@ -99,7 +104,6 @@ profilesRouter
         }
       })
     }
-
 
     ProfilesService.updateProfile(
       req.app.get('db'),

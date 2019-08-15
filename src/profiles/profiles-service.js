@@ -12,6 +12,7 @@ const ProfilesService = {
       })
   },
   getById(knex, id) {
+    console.log(`id: ${id}`)
     return knex.from('ff_profiles').select('*').where('id', id).first()
   },
   deleteProfile(knex, id) {
