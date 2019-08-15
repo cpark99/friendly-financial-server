@@ -143,9 +143,12 @@ function makeMaliciousProfile(user) {
   }
 }
 
-function makeAuthHeader(user) {
-  const token = Buffer.from(`${user.email}:${user.password}`).toString('base64')
-  return `Basic ${token}`
+function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+  const token = jwt.sign({ email: user.email }, secret, {
+    subject: user.email,
+    algorithm: 'HS256',
+  })
+  return `Bearer ${token}`
 }
 
 // function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
