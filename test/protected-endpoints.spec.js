@@ -60,19 +60,11 @@ describe.only(`Protected endpoints`, () => {
           .expect(401, { error: `Unauthorized request` })
       })
 
-      it.skip(`responds 401 'Unauthorized request' when invalid user`, () => {
-        const userInvalidCreds = { email: 'user-not', password: 'existy' }
+      it(`responds 401 'Unauthorized request' when invalid sub in payload`, () => {
+        const invalidUser = { email: 'user@not-existy', id: 1 }
         return supertest(app)
           .get(endpoint.path)
-          .set('Authorization', helpers.makeAuthHeader(userInvalidCreds))
-          .expect(401, { error: `Unauthorized request` })
-      })
-
-      it.skip(`responds 401 'Unauthorized request' when invalid password`, () => {
-        const userInvalidPass = { email: testUsers[0].email, password: 'wrong' }
-        return supertest(app)
-          .get(endpoint.path)
-          .set('Authorization', helpers.makeAuthHeader(userInvalidPass))
+          .set('Authorization', helpers.makeAuthHeader(invalidUser))
           .expect(401, { error: `Unauthorized request` })
       })
     })
