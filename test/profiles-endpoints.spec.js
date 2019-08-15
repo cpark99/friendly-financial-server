@@ -10,11 +10,6 @@ describe('Profiles Endpoints', function() {
     testProfiles,
   } = helpers.makeProfilesFixtures()
 
-  function makeAuthHeader(user) {
-    const token = Buffer.from(`${user.email}:${user.password}`).toString('base64')
-    return `Basic ${token}`
-  }
-
   before('make knex instance', () => {
     db = knex({
       client: 'pg',
@@ -28,61 +23,6 @@ describe('Profiles Endpoints', function() {
   before('cleanup', () => helpers.cleanTables(db))
 
   afterEach('cleanup', () => helpers.cleanTables(db))
-
-  describe.only(`Protected endpoints`, () => {
-    beforeEach('insert profiles', () =>
-      helpers.seedProfilesTables(
-        db,
-        testUsers,
-        testProfiles,
-      )
-    )
-
-    const protectedEndpoints = [
-      {
-        name: 'GET /api/profiles/:profile_id',
-        path: '/api/profiles/1'
-      },
-      // { // (additional endpoint)
-      //   name: 'GET /api/profiles/:profile_id/comments',
-      //   path: '/api/profiles/1/comments'
-      // },
-    ]
-      
-    protectedEndpoints.forEach(endpoint => {
-      describe(endpoint.name, () => {
-        it(`responds with 401 'Missing basic token' when no basic token`, () => {
-          return supertest(app)
-            .get(endpoint.path)
-            .expect(401, { error: `Missing basic token` })
-        })
-
-        it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
-          const userNoCreds = { email: '', password: '' }
-          return supertest(app)
-            .get(endpoint.path)
-            .set('Authorization', makeAuthHeader(userNoCreds))
-            .expect(401, { error: `Unauthorized request` })
-        })
-
-        it(`responds 401 'Unauthorized request' when invalid user`, () => {
-          const userInvalidCreds = { email: 'user-not', password: 'existy' }
-          return supertest(app)
-            .get(endpoint.path)
-            .set('Authorization', makeAuthHeader(userInvalidCreds))
-            .expect(401, { error: `Unauthorized request` })
-        })
-
-        it(`responds 401 'Unauthorized request' when invalid password`, () => {
-          const userInvalidPass = { email: testUsers[0].email, password: 'wrong' }
-          return supertest(app)
-            .get(endpoint.path)
-            .set('Authorization', makeAuthHeader(userInvalidPass))
-            .expect(401, { error: `Unauthorized request` })
-        })
-      })
-    })
-  })
 
   describe(`GET /api/profiles`, () => {
     context(`Given no Profiles`, () => {
@@ -134,7 +74,7 @@ describe('Profiles Endpoints', function() {
       it('removes XSS attack content', () => {
         return supertest(app)
           .get(`/api/profiles`)
-          .set('Authorization',helpers.makeAuthHeader(testUsers[0]))
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .expect(200)
           .expect(res => {
             expect(res.body[0].name).to.eql(expectedProfile.name)
@@ -144,7 +84,7 @@ describe('Profiles Endpoints', function() {
     })
   })
 
-  describe.only(`GET /api/profiles/:profile_id`, () => {
+  describe(`GET /api/profiles/:profile_id`, () => {
     context(`Given no profiles`, () => {
       beforeEach(() =>
       helpers.seedUsers(db, testUsers))
@@ -153,7 +93,7 @@ describe('Profiles Endpoints', function() {
         const profileId = 123456
         return supertest(app)
           .get(`/api/profiles/${profileId}`)
-          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .expect(404, { error: `profile doesn't exist` })
       })
     })
@@ -176,7 +116,7 @@ describe('Profiles Endpoints', function() {
 
         return supertest(app)
           .get(`/api/profiles/${profileId}`)
-          .set('Authorization', makeAuthHeader(testUsers[0]))
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .expect(200, expectedProfile)
       })
     })
@@ -199,7 +139,7 @@ describe('Profiles Endpoints', function() {
       it('removes XSS attack content', () => {
         return supertest(app)
           .get(`/api/profiles/${maliciousProfile.id}`)
-          .set('Authorization', makeAuthHeader(testUser))
+          .set('Authorization', helpers.makeAuthHeader(testUser))
           .expect(200)
           .expect(res => {
             expect(res.body.name).to.eql(expectedProfile.name)
