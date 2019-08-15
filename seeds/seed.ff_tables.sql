@@ -7,7 +7,7 @@ TRUNCATE
 
 INSERT INTO ff_users (email, password)
 VALUES
-  ('demo@test.com', 'password');
+  ('demo@test.com', '$2a$12$C7YA3Eav2k44c5bmRhOZXesNmw8fYXAaBggk78GeVTyIU6XcgM26m');
 
 INSERT INTO ff_profiles (
   name,

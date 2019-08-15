@@ -122,7 +122,7 @@ describe("Users Endpoints", function() {
       });
 
       context(`Happy path`, () => {
-        it.skip(`responds 201, serialized user, storing bcryped password`, () => {
+        it(`responds 201, serialized user, storing bcryped password`, () => {
           const newUser = {
             email: "test email",
             password: "11AAaa!!"

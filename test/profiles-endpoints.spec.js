@@ -87,7 +87,7 @@ describe('Profiles Endpoints', function() {
   describe(`GET /api/profiles/:profile_id`, () => {
     context(`Given no profiles`, () => {
       beforeEach(() =>
-      helpers.seedUsers(db, testUsers))
+        helpers.seedUsers(db, testUsers))
 
       it(`responds with 404`, () => {
         const profileId = 123456

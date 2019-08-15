@@ -172,9 +172,11 @@ function cleanTables(db) {
 }
 
 function seedProfilesTables(db, users, profiles) {
+  // use a transaction to group the queries and auto rollback on any failure
   return db.transaction(async trx => {
     await seedUsers(trx, users);
     await trx.into('ff_profiles').insert(profiles);
+    // update the auto sequence to match the forced id values
     await trx.raw(
       `SELECT setval('ff_profiles_id_seq', ?)`,
       [profiles[profiles.length - 1].id],
