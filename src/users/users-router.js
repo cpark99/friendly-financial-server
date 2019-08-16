@@ -1,14 +1,26 @@
 const express = require('express')
 const path = require('path')
+const xss = require('xss')
+const jsonBodyParser = express.json()
+const jsonParser = express.json()
+const { requireAuth } = require('../middleware/jwt-auth')
 const UsersService = require('./users-service')
 const usersRouter = express.Router()
-const jsonBodyParser = express.json()
 
 usersRouter
-  .post('/', jsonBodyParser, (req, res, next) => {
-    const { password, email } = req.body
+  .route('/')
+  .get((req, res, next) => {
+    const knexInstance = req.app.get('db')
+    UsersService.getAllUsers(knexInstance)
+      .then(users => {
+        res.json(users.map(UsersService.serializeUser))
+      })
+      .catch(next)
+  })
+  .post(jsonBodyParser, (req, res, next) => {
+    const { password, email, name, phone, life_insurance_goal, get_email, get_call, get_newsletter } = req.body
 
-    for (const field of ['email', 'password'])
+    for (const field of ['email', 'password', 'name', 'phone', 'get_email', 'get_call', 'get_newsletter'])
       if (!req.body[field])
         return res.status(400).json({
           error: `Missing '${field}' in request body`
@@ -32,6 +44,12 @@ usersRouter
               const newUser = {
                 email,
                 password: hashedPassword,
+                name,
+                phone,
+                life_insurance_goal,
+                get_email,
+                get_call,
+                get_newsletter,
                 date_created: 'now()',
               }
           
@@ -46,6 +64,63 @@ usersRouter
                     .json(UsersService.serializeUser(user))
                 })
             })
+      })
+      .catch(next)
+  })
+
+usersRouter
+  .route('/:user_id')
+  .all(requireAuth)
+  .all((req, res, next) => {
+    UsersService.getById(
+      req.app.get('db'),
+      req.params.user_id
+    )
+      .then(user => {
+        if (!user) {
+          return res.status(404).json({
+            error: `user doesn't exist` 
+          })
+        }
+        res.user = user // save the user for the next middleware
+        next() // don't forget to call next so the next middleware happens!
+      })
+      .catch(next)
+  })
+  .get((req, res, next) => {
+    res.json(UsersService.serializeUser(res.user))
+    console.log(`res.user: ${res.user}`)
+  })
+  .delete((req, res, next) => {
+    UsersService.deleteUser(
+      req.app.get('db'),
+      req.params.user_id
+    )
+      .then(() => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
+  .patch(jsonParser, (req, res, next) => {
+    const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_modified } = req.body
+    const userToUpdate = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_modified }
+
+    const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message: `Request body must contain either 'name', 'email', 'phone', 'life_insurance_goal', 'get_email', 'get_call', 'get_newsletter', or 'date_modified'`
+        }
+      })
+    }
+
+    UsersService.updateUser(
+      req.app.get('db'),
+      req.params.user_id,
+      userToUpdate
+    )
+      .then(numRowsAffected => {
+        res.status(204).end()
       })
       .catch(next)
   })

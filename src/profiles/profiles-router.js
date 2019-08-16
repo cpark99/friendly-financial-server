@@ -1,5 +1,3 @@
-const debug = require('debug');
-
 const path = require('path')
 const express = require('express')
 const xss = require('xss')
@@ -71,7 +69,6 @@ profilesRouter
             error: `profile doesn't exist` 
           })
         }
-        debugger;
         res.profile = profile // save the profile for the next middleware
         next() // don't forget to call next so the next middleware happens!
       })

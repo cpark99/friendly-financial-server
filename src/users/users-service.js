@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs')
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
 
 const UsersService = {
+  getAllUsers(knex) {
+    return knex.select('*').from('ff_users')
+  },
   hasUserWithEmail(db, email) {
     return db('ff_users')
       .where({ email })
@@ -35,12 +38,44 @@ const UsersService = {
   hashPassword(password) {
     return bcrypt.hash(password, 12)
   },
+  getById(db, id) {
+    console.log(`getById(id): ${id}`)
+    return db
+      .from('ff_users AS u')
+      .select(
+        'u.name',
+        'u.email',
+        'u.phone',
+        'u.life_insurance_goal',
+        'u.get_email',
+        'u.get_call',
+        'u.get_newsletter'
+      )
+      .where('u.id', id)
+      .first()
+  },
   serializeUser(user) {
     return {
       id: user.id,
+      name: xss(user.name),
       email: xss(user.email),
-      date_created: new Date(user.date_created),
+      phone: xss(user.phone),
+      life_insurance_goal: user.life_insurance_goal,
+      get_email: user.get_email,
+      get_call: user.get_call,
+      get_newsletter: user.get_newsletter,
+      date_created: new Date(user.date_created)
     }
+  },
+  deleteProfile(knex, id) {
+    return knex('ff_users')
+      .where({ id })
+      .delete()
+  },
+  updateProfile(knex, id, newUserFields) {
+    return knex('ff_users')
+      .where({ id })
+      .update(newUserFields)
   },
 }
 
