@@ -7,37 +7,8 @@ function makeUsersArray() {
       id: 1,
       date_created: '2029-01-22T16:28:32.615Z',
       email: 'test@tester.com',
-      password: 'password'
-    },
-    {
-      id: 2,
-      date_created: '2029-01-22T16:28:32.615Z',
-      email: 'test2@tester.com',
-      password: 'password'
-    },
-    {
-      id: 3,
-      date_created: '2029-01-22T16:28:32.615Z',
-      email: 'test3@tester.com',
-      password: 'password'
-    },
-    {
-      id: 4,
-      date_created: '2029-01-22T16:28:32.615Z',
-      email: 'test4@tester.com',
-      password: 'password'
-    },
-  ]
-}
-
-function makeProfilesArray(users) {
-  return [
-    {
-      id: 1,
-      date_created: '2029-01-22T16:28:32.615Z',
-      date_modified: '2029-01-22T16:28:32.615Z',
+      password: 'password',
       name: 'tester',
-      email: users[0].email,
       phone: '(888)888-8888',
       life_insurance_goal: '',
       get_email: true,
@@ -47,7 +18,8 @@ function makeProfilesArray(users) {
     {
       id: 2,
       date_created: '2029-01-22T16:28:32.615Z',
-      date_modified: '2029-01-22T16:28:32.615Z',
+      email: 'test2@tester.com',
+      password: 'password',
       name: 'tester2',
       email: users[1].email,
       phone: '(888)888-8889',
@@ -59,9 +31,9 @@ function makeProfilesArray(users) {
     {
       id: 3,
       date_created: '2029-01-22T16:28:32.615Z',
-      date_modified: '2029-01-22T16:28:32.615Z',
+      email: 'test3@tester.com',
+      password: 'password',
       name: 'tester3',
-      email: users[2].email,
       phone: '(888)888-8887',
       life_insurance_goal: '',
       get_email: false,
@@ -71,9 +43,9 @@ function makeProfilesArray(users) {
     {
       id: 4,
       date_created: '2029-01-22T16:28:32.615Z',
-      date_modified: '2029-01-22T16:28:32.615Z',
+      email: 'test4@tester.com',
+      password: 'password',
       name: 'tester4',
-      email: users[3].email,
       phone: '(888)888-8886',
       life_insurance_goal: '',
       get_email: true,
@@ -82,6 +54,59 @@ function makeProfilesArray(users) {
     },
   ]
 }
+
+// function makeProfilesArray(users) {
+//   return [
+//     {
+//       id: 1,
+//       date_created: '2029-01-22T16:28:32.615Z',
+//       date_modified: '2029-01-22T16:28:32.615Z',
+//       name: 'tester',
+//       email: users[0].email,
+//       phone: '(888)888-8888',
+//       life_insurance_goal: '',
+//       get_email: true,
+//       get_call: true,
+//       get_newsletter: true
+//     },
+//     {
+//       id: 2,
+//       date_created: '2029-01-22T16:28:32.615Z',
+//       date_modified: '2029-01-22T16:28:32.615Z',
+//       name: 'tester2',
+//       email: users[1].email,
+//       phone: '(888)888-8889',
+//       life_insurance_goal: '',
+//       get_email: true,
+//       get_call: true,
+//       get_newsletter: false
+//     },
+//     {
+//       id: 3,
+//       date_created: '2029-01-22T16:28:32.615Z',
+//       date_modified: '2029-01-22T16:28:32.615Z',
+//       name: 'tester3',
+//       email: users[2].email,
+//       phone: '(888)888-8887',
+//       life_insurance_goal: '',
+//       get_email: false,
+//       get_call: true,
+//       get_newsletter: true
+//     },
+//     {
+//       id: 4,
+//       date_created: '2029-01-22T16:28:32.615Z',
+//       date_modified: '2029-01-22T16:28:32.615Z',
+//       name: 'tester4',
+//       email: users[3].email,
+//       phone: '(888)888-8886',
+//       life_insurance_goal: '',
+//       get_email: true,
+//       get_call: false,
+//       get_newsletter: true
+//     },
+//   ]
+// }
 
 function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
