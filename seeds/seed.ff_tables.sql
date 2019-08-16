@@ -13,10 +13,10 @@ INSERT INTO ff_users (
   get_call,
   get_newsletter
 ) VALUES
-  ('demo@test.com',
+  ('demo@demo.com',
   '$2a$12$C7YA3Eav2k44c5bmRhOZXesNmw8fYXAaBggk78GeVTyIU6XcgM26m',
   'Jane Doe',
-  '(888)888-8888',
+  '8888888888',
   true,
   true,
   true
