@@ -38,7 +38,6 @@ profilesRouter
 
     for (const [key, value] of Object.entries(newProfile)) {
       if (value == null) {
-        console.log(key)
         return res.status(400).json({
           error: { message: `Missing '${key}' in request body` }
         })

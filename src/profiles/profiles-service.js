@@ -11,9 +11,26 @@ const ProfilesService = {
         return rows[0]
       })
   },
-  getById(knex, id) {
-    console.log(`id: ${id}`)
-    return knex.from('ff_profiles').select('*').where('id', id).first()
+  getById(db, id) {
+    console.log(`getById(id): ${id}`)
+    return db
+      .from('ff_profiles AS p')
+      .select(
+        'p.name',
+        'p.email',
+        'p.phone',
+        'p.life_insurance_goal',
+        'p.get_email',
+        'p.get_call',
+        'p.get_newsletter'
+      )
+      .leftJoin(
+        'ff_users AS u',
+        'p.email',
+        'u.email',
+      )
+      .where('p.id', id)
+      .first()
   },
   deleteProfile(knex, id) {
     return knex('ff_profiles')

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const app = require("../src/app");
 const helpers = require("./test-helpers");
 
-describe.only("Users Endpoints", function() {
+describe("Users Endpoints", function() {
   let db;
 
   const { testUsers } = helpers.makeProfilesFixtures();
@@ -136,12 +136,8 @@ describe.only("Users Endpoints", function() {
               expect(res.body.email).to.eql(newUser.email);
               expect(res.body).to.not.have.property("password");
               expect(res.headers.location).to.eql(`/api/users/${res.body.id}`);
-              const expectedDate = new Date().toLocaleString("en", {
-                timeZone: "UTC"
-              });
-              const actualDate = new Date(
-                res.body.date_created
-              ).toLocaleString();
+              const expectedDate = new Date().toLocaleString("en", { timeZone: "UTC" });
+              const actualDate = new Date(res.body.date_created).toLocaleString();
               expect(actualDate).to.eql(expectedDate);
             })
             .expect(res =>
