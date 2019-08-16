@@ -6,9 +6,8 @@ describe(`Protected endpoints`, () => {
   let db
 
   const {
-    testUsers,
-    testProfiles,
-  } = helpers.makeProfilesFixtures()
+    testUsers
+  } = helpers.makeUsersFixtures()
 
   before('make knex instance', () => {
     db = knex({
@@ -24,18 +23,17 @@ describe(`Protected endpoints`, () => {
 
   afterEach('cleanup', () => helpers.cleanTables(db))
 
-  beforeEach('insert profiles', () =>
-    helpers.seedProfilesTables(
+  beforeEach('insert users', () =>
+    helpers.seedUsersTables(
       db,
-      testUsers,
-      testProfiles,
+      testUsers
     )
   )
 
   const protectedEndpoints = [
     {
-      name: 'GET /api/profiles/:profile_id',
-      path: '/api/profiles/1'
+      name: 'GET /api/users/:user_id',
+      path: '/api/users/1'
     },
     // { // (additional endpoint)
     //   name: 'GET /api/profiles/:profile_id/comments',

@@ -3,10 +3,10 @@ const bcrypt = require('bcryptjs')
 const app = require("../src/app");
 const helpers = require("./test-helpers");
 
-describe("Users Endpoints", function() {
+describe.only("Users Endpoints", function() {
   let db;
 
-  const { testUsers } = helpers.makeProfilesFixtures();
+  const { testUsers } = helpers.makeUsersFixtures();
   const testUser = testUsers[0];
 
   before("make knex instance", () => {
@@ -23,16 +23,80 @@ describe("Users Endpoints", function() {
 
   afterEach("cleanup", () => helpers.cleanTables(db));
 
+  describe(`GET /api/users`, () => {
+    context(`Given no Users`, () => {
+      it(`responds with 200 and an empty list`, () => {
+        return supertest(app)
+          .get('/api/users')
+          .expect(200, [])
+      })
+    })
+
+    context('Given there are Users in the database', () => {
+      beforeEach('insert Users', () =>
+        helpers.seedUsers(
+          db,
+          testUsers
+        )
+      )
+
+      it('responds with 200 and all of the Users', () => {
+        const expectedUsers = testUsers.map(user =>
+          helpers.makeExpectedUser(
+            testUsers,
+            user,
+          )
+        )
+        return supertest(app)
+          .get('/api/users')
+          .set('Authorization',helpers.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedUsers)
+      })
+    })
+
+    context(`Given an XSS attack user`, () => {
+      const testUser = helpers.makeUsersArray()[1]
+      const {
+        maliciousUser,
+        expectedUser,
+      } = helpers.makeMaliciousUser(testUser)
+
+      beforeEach('insert malicious user', () => {
+        return helpers.seedMaliciousUser(
+          db,
+          testUser,
+          maliciousUser,
+        )
+      })
+
+      it('removes XSS attack content', () => {
+        return supertest(app)
+          .get(`/api/users`)
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+          .expect(200)
+          .expect(res => {
+            expect(res.body[0].name).to.eql(expectedUser.name)
+            expect(res.body[0].life_insurance_goal).to.eql(expectedUser.life_insurance_goal)
+          })
+      })
+    })
+  })
+
   describe(`POST /api/users`, () => {
     context(`User Validation`, () => {
       beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
 
-      const requiredFields = ["email", "password"];
+      const requiredFields = ["email", "password", "name", "phone", "get_email", "get_call", "get_newsletter"];
 
       requiredFields.forEach(field => {
         const registerAttemptBody = {
           email: "test email",
-          password: "test password"
+          password: "test password",
+          name: "test name",
+          phone: "8888888888",
+          get_email: true,
+          get_call: true,
+          get_newsletter: true
         };
 
         it(`responds with 400 required error when '${field}' is missing`, () => {
@@ -49,7 +113,12 @@ describe("Users Endpoints", function() {
         it(`responds 400 'Password be longer than 8 characters' when empty password`, () => {
           const userShortPassword = {
             email: "test email",
-            password: "1234567"
+            password: "1234567",
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           return supertest(app)
             .post("/api/users")
@@ -60,7 +129,12 @@ describe("Users Endpoints", function() {
         it(`responds 400 'Password be less than 72 characters' when long password`, () => {
           const userLongPassword = {
             email: "test email",
-            password: "*".repeat(73)
+            password: "*".repeat(73),
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           // console.log(userLongPassword)
           // console.log(userLongPassword.password.length)
@@ -73,7 +147,12 @@ describe("Users Endpoints", function() {
         it(`responds 400 error when password starts with spaces`, () => {
           const userPasswordStartsSpaces = {
             email: "test email",
-            password: " 1Aa!2Bb@"
+            password: " 1Aa!2Bb@",
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           return supertest(app)
             .post("/api/users")
@@ -86,7 +165,12 @@ describe("Users Endpoints", function() {
         it(`responds 400 error when password ends with spaces`, () => {
           const userPasswordEndsSpaces = {
             email: "test email",
-            password: "1Aa!2Bb@ "
+            password: "1Aa!2Bb@ ",
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           return supertest(app)
             .post("/api/users")
@@ -99,7 +183,12 @@ describe("Users Endpoints", function() {
         it(`responds 400 error when password isn't complex enough`, () => {
           const userPasswordNotComplex = {
             email: "test email",
-            password: "11AAaabb"
+            password: "11AAaabb",
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           return supertest(app)
             .post("/api/users")
@@ -112,7 +201,12 @@ describe("Users Endpoints", function() {
         it(`responds 400 'Email already taken' when email isn't unique`, () => {
           const duplicateUser = {
             email: testUser.email,
-            password: "11AAaa!!"
+            password: "11AAaa!!",
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           return supertest(app)
             .post("/api/users")
@@ -125,7 +219,12 @@ describe("Users Endpoints", function() {
         it(`responds 201, serialized user, storing bcryped password`, () => {
           const newUser = {
             email: "test email",
-            password: "11AAaa!!"
+            password: "11AAaa!!",
+            name: "test name",
+            phone: "8888888888",
+            get_email: true,
+            get_call: true,
+            get_newsletter: true
           };
           return supertest(app)
             .post("/api/users")
@@ -134,6 +233,11 @@ describe("Users Endpoints", function() {
             .expect(res => {
               expect(res.body).to.have.property("id");
               expect(res.body.email).to.eql(newUser.email);
+              expect(res.body.name).to.eql(newUser.name);
+              expect(res.body.phone).to.eql(newUser.phone);
+              expect(res.body.get_email).to.eql(newUser.get_email);
+              expect(res.body.get_call).to.eql(newUser.get_call);
+              expect(res.body.get_newsletter).to.eql(newUser.get_newsletter);
               expect(res.body).to.not.have.property("password");
               expect(res.headers.location).to.eql(`/api/users/${res.body.id}`);
               const expectedDate = new Date().toLocaleString("en", { timeZone: "UTC" });
@@ -148,6 +252,11 @@ describe("Users Endpoints", function() {
                 .first()
                 .then(row => {
                   expect(row.email).to.eql(newUser.email)
+                  expect(row.body.name).to.eql(newUser.name)
+                  expect(row.body.phone).to.eql(newUser.phone)
+                  expect(row.body.get_email).to.eql(newUser.get_email)
+                  expect(row.body.get_call).to.eql(newUser.get_call)
+                  expect(row.body.get_newsletter).to.eql(newUser.get_newsletter)
                   const expectedDate = new Date().toLocaleString('en', { timeZone: 'UTC' })
                   const actualDate = new Date(row.date_created).toLocaleString()
                   expect(actualDate).to.eql(expectedDate)
@@ -162,6 +271,70 @@ describe("Users Endpoints", function() {
       });
     });
   });
+
+  describe(`GET /api/users/:user_id`, () => {
+    context(`Given no users`, () => {
+      beforeEach(() =>
+        helpers.seedUsers(db, testUsers))
+
+      it(`responds with 404`, () => {
+        const userId = 123456
+        return supertest(app)
+          .get(`/api/users/${userId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+          .expect(404, { error: `user doesn't exist` })
+      })
+    })
+
+    context('Given there are profiles in the database', () => {
+      beforeEach('insert users', () =>
+        helpers.seedUsers(
+          db,
+          testUsers
+        )
+      )
+
+      it('responds with 200 and the specified user', () => {
+        const userId = 2
+        const expectedUser = helpers.makeExpectedUser(
+          testUsers,
+          testUsers[userId - 1],
+        )
+
+        return supertest(app)
+          .get(`/api/users/${userId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedUser)
+      })
+    })
+
+    context(`Given an XSS attack user`, () => {
+      const testUser = helpers.makeUsersArray()[1]
+      const {
+        maliciousUser,
+        expectedUser,
+      } = helpers.makeMaliciousUser(testUser)
+
+      beforeEach('insert malicious user', () => {
+        return helpers.seedMaliciousUser(
+          db,
+          testUser,
+          maliciousUser,
+        )
+      })
+
+      it('removes XSS attack content', () => {
+        return supertest(app)
+          .get(`/api/users/${maliciousUser.id}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(200)
+          .expect(res => {
+            expect(res.body.name).to.eql(expectedUser.name)
+            expect(res.body.life_insurance_goal).to.eql(expectedUser.life_insurance_goal)
+          })
+      })
+    })
+  })
 });
 
 

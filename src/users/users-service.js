@@ -43,13 +43,15 @@ const UsersService = {
     return db
       .from('ff_users AS u')
       .select(
+        'u.id',
         'u.name',
         'u.email',
         'u.phone',
         'u.life_insurance_goal',
         'u.get_email',
         'u.get_call',
-        'u.get_newsletter'
+        'u.get_newsletter',
+        'u.date_created'
       )
       .where('u.id', id)
       .first()
@@ -60,7 +62,7 @@ const UsersService = {
       name: xss(user.name),
       email: xss(user.email),
       phone: xss(user.phone),
-      life_insurance_goal: user.life_insurance_goal,
+      life_insurance_goal: xss(user.life_insurance_goal),
       get_email: user.get_email,
       get_call: user.get_call,
       get_newsletter: user.get_newsletter,
