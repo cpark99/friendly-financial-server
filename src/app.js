@@ -15,11 +15,9 @@ app.use(morgan(morganOption));
 app.use(cors());
 app.use(helmet());
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https:friendlyfinancial-app.now.sh"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(cors({
+  origin: 'https://friendlyfinancial-app.now.sh'
+}));
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
