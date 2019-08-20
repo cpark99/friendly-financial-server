@@ -15,9 +15,8 @@ app.use(morgan(morganOption));
 app.use(cors());
 app.use(helmet());
 
-
-app.use('/api/users', usersRouter)
 app.use('/api/auth',authRouter)
+app.use('/api/users', usersRouter)
 // app.use('/api/profiles', profilesRouter)
 
 app.get("/", (req, res) => {
