@@ -33,9 +33,10 @@ authRouter
               error: 'Incorrect email or password',
             })
             const sub=dbUser.email
-            const payload = {email:dbUser.email}
+            const payload = {user_id:dbUser.id}
             res.send({
-              authToken:AuthService.createJwt(sub,payload)
+              authToken:AuthService.createJwt(sub,payload),
+              payload:payload
             })
         })    
       })
