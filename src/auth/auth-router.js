@@ -1,17 +1,11 @@
 const express = require('express')
-const cors = require('cors')
 const authRouter = express.Router()
 const jsonBodyParser = express.json()
 const AuthService = require('./auth-service')
 const { requireAuth } = require('../middleware/jwt-auth')
 
-var corsOptions = {
-  origin: 'https://friendlyfinancial-app.now.sh',
-  optionsSuccessStatus: 200
-}
-
 authRouter
-  .post('/login',cors(corsOptions),jsonBodyParser,(req, res, next)=>{
+  .post('/login',jsonBodyParser,(req, res, next)=>{
     const { email, password } = req.body
     const loginUser = { email, password }
     
