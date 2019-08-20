@@ -17,7 +17,6 @@ app.use(helmet());
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
-// app.use('/api/profiles', profilesRouter)
 
 app.get("/", (req, res) => {
   res.send("Hello, world!");
