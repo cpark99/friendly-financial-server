@@ -102,8 +102,8 @@ usersRouter
       .catch(next)
   })
   .patch(jsonParser, (req, res, next) => {
-    const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter } = req.body
-    const userToUpdate = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter }
+    const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_created } = req.body
+    const userToUpdate = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_created }
 
     const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
     if (numberOfValues === 0) {

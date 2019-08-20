@@ -69,12 +69,12 @@ const UsersService = {
       date_created: new Date(user.date_created)
     }
   },
-  deleteProfile(knex, id) {
+  deleteUser(knex, id) {
     return knex('ff_users')
       .where({ id })
       .delete()
   },
-  updateProfile(knex, id, newUserFields) {
+  updateUser(knex, id, newUserFields) {
     return knex('ff_users')
       .where({ id })
       .update(newUserFields)
