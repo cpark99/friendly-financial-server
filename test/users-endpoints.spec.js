@@ -215,7 +215,7 @@ describe.only("Users Endpoints", function() {
       });
 
       context(`Happy path`, () => {
-        it(`responds 201, serialized user, storing bcryped password`, () => {
+        it.only(`responds 201, serialized user, storing bcryped password`, () => {
           const newUser = {
             email: "test@test.com",
             password: "11AAaa!!",
@@ -224,9 +224,10 @@ describe.only("Users Endpoints", function() {
             get_email: true,
             get_call: true,
             get_newsletter: true
-          };
+          }
+
           return supertest(app)
-            .post("/api/users")
+            .post('/api/users')
             .send(newUser)
             .expect(201)
             .expect(res => {
