@@ -69,7 +69,7 @@ describe.only("Users Endpoints", function() {
         )
       })
 
-      it.skip('removes XSS attack content', () => {
+      it.only('removes XSS attack content', () => {
         return supertest(app)
           .get(`/api/users`)
           .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
@@ -216,9 +216,9 @@ describe.only("Users Endpoints", function() {
       });
 
       context(`Happy path`, () => {
-        it.skip(`responds 201, serialized user, storing bcryped password`, () => {
+        it(`responds 201, serialized user, storing bcryped password`, () => {
           const newUser = {
-            email: "test email",
+            email: "test@test.com",
             password: "11AAaa!!",
             name: "test name",
             phone: "8888888888",
@@ -370,7 +370,7 @@ describe.only("Users Endpoints", function() {
   //   })
   // })
 
-  describe.only(`PATCH /api/users/:user_id`, () => {
+  describe(`PATCH /api/users/:user_id`, () => {
     context(`Given no users`, () => {
       beforeEach(() =>
         helpers.seedUsers(db, testUsers))
@@ -396,22 +396,26 @@ describe.only("Users Endpoints", function() {
       it('responds with 204 and updates the user', () => {
         const idToUpdate = 2
         const updateUser = {
-          email: 'updated user email',
-          password: 'Password',
-          date_modified: new Date().toISOString(),
+          life_insurance_goal: 'updated goal'
         }
-        const expectedUser = {
-          ...testUsers[idToUpdate - 1],
+        let expectedUser = helpers.makeExpectedUser(
+          testUsers,
+          testUsers[idToUpdate - 1],
+        )
+        expectedUser = {
+          ...expectedUser,
           ...updateUser
         }
+        
         return supertest(app)
           .patch(`/api/users/${idToUpdate}`)
-          .send(updateUser)
           .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+          .send(updateUser)
           .expect(204)
           .then(res =>
             supertest(app)
               .get(`/api/users/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
               .expect(expectedUser)
           )
       })
@@ -424,7 +428,7 @@ describe.only("Users Endpoints", function() {
           .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .expect(400, {
             error: {
-              message: `Request body must contain either 'email', 'password', or 'date_modified'`
+              message: `Request body must contain 'life_insurance_goal'`
             }
           })
       })
@@ -432,10 +436,14 @@ describe.only("Users Endpoints", function() {
       it(`responds with 204 when updating only a subset of fields`, () => {
         const idToUpdate = 2
         const updateUser = {
-          email: 'updated user email',
+          life_insurance_goal: 'updated goal'
         }
-        const expectedUser = {
-          ...testUsers[idToUpdate - 1],
+        let expectedUser = helpers.makeExpectedUser(
+          testUsers,
+          testUsers[idToUpdate - 1],
+        )
+        expectedUser = {
+          ...expectedUser,
           ...updateUser
         }
       
@@ -450,9 +458,9 @@ describe.only("Users Endpoints", function() {
           .then(res =>
             supertest(app)
               .get(`/api/users/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
               .expect(expectedUser)
           )
-        
       })
     })
   })

@@ -74,14 +74,14 @@ function makeExpectedUser(users, profile) {
 
   return {
     id: profile.id,
-    name: profile.name,
+    date_created: profile.date_created,
     email: profile.email,
+    name: profile.name,
     phone: profile.phone,
     life_insurance_goal: profile.life_insurance_goal,
     get_email: profile.get_email,
     get_call: profile.get_call,
-    get_newsletter: profile.get_newsletter,
-    date_created: profile.date_created
+    get_newsletter: profile.get_newsletter
   }
 }
 
