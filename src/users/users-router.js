@@ -102,17 +102,18 @@ usersRouter
       .catch(next)
   })
   .patch(jsonParser, (req, res, next) => {
-    const { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_created } = req.body
-    const userToUpdate = { name, email, phone, life_insurance_goal, get_email, get_call, get_newsletter, date_created }
+    const { life_insurance_goal } = req.body
+    const userToUpdate = { life_insurance_goal }
+
+    console.log(userToUpdate)
 
     const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
-    if (numberOfValues === 0) {
+    if (numberOfValues === 0)
       return res.status(400).json({
         error: {
-          message: `Request body must contain either 'name', 'email', 'phone', 'life_insurance_goal', 'get_email', 'get_call', 'get_newsletter', or 'date_modified'`
+          message: `Request body must contain 'life_insurance_goal'`
         }
       })
-    }
 
     UsersService.updateUser(
       req.app.get('db'),
