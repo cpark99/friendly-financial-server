@@ -55,7 +55,7 @@ describe.only("Users Endpoints", function() {
     })
 
     context(`Given an XSS attack user`, () => {
-      const testUser = helpers.makeUsersArray()[1]
+      // const testUser = helpers.makeUsersArray()[1]
       const {
         maliciousUser,
         expectedUser,
@@ -64,12 +64,11 @@ describe.only("Users Endpoints", function() {
       beforeEach('insert malicious user', () => {
         return helpers.seedMaliciousUser(
           db,
-          testUser,
-          maliciousUser,
+          maliciousUser
         )
       })
 
-      it.only('removes XSS attack content', () => {
+      it('removes XSS attack content', () => {
         return supertest(app)
           .get(`/api/users`)
           .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
@@ -309,7 +308,7 @@ describe.only("Users Endpoints", function() {
     })
 
     context(`Given an XSS attack user`, () => {
-      const testUser = helpers.makeUsersArray()[1]
+      // const testUser = helpers.makeUsersArray()[1]
       const {
         maliciousUser,
         expectedUser,
@@ -318,7 +317,6 @@ describe.only("Users Endpoints", function() {
       beforeEach('insert malicious user', () => {
         return helpers.seedMaliciousUser(
           db,
-          testUser,
           maliciousUser,
         )
       })
@@ -326,7 +324,7 @@ describe.only("Users Endpoints", function() {
       it('removes XSS attack content', () => {
         return supertest(app)
           .get(`/api/users/${maliciousUser.id}`)
-          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .set('Authorization', helpers.makeAuthHeader(maliciousUser))
           .expect(200)
           .expect(res => {
             expect(res.body.name).to.eql(expectedUser.name)

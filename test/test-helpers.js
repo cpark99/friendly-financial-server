@@ -131,13 +131,10 @@ function cleanTables(db) {
   )
 }
 
-function seedMaliciousUser(db, user, profile) {
-  return seedUsers(db, [user])
-    .then(() =>
-      db
-        .into('ff_users')
-        .insert([profile])
-    )
+function seedMaliciousUser(db, profile) {
+  return db
+    .into('ff_users')
+    .insert([profile])
 }
 
 module.exports = {
