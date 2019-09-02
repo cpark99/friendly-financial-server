@@ -42,5 +42,16 @@ authRouter
       })
       .catch(next)      
   })
+  .route('/')
+  .all(requireAuth, (req, res, next) => {
+    let user = { id: null }
+    user.id = req.user.id
+    res.user = user // save the user for the next middleware
+    next()
+  })
+  .get((req, res, next) => {
+    const user_id = res.user.id
+    res.json({id:user_id})
+  })
 
   module.exports = authRouter;
