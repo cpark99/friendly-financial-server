@@ -24,7 +24,7 @@ describe(`Protected endpoints`, () => {
   afterEach('cleanup', () => helpers.cleanTables(db))
 
   beforeEach('insert users', () =>
-    helpers.seedUsersTables(
+    helpers.seedUsers(
       db,
       testUsers
     )
