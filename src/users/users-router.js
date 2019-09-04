@@ -89,23 +89,10 @@ usersRouter
   })
   .get((req, res, next) => {
     res.json(UsersService.serializeUser(res.user))
-    // console.log(`res.user: ${res.user}`)
   })
-  // .delete((req, res, next) => {
-  //   UsersService.deleteUser(
-  //     req.app.get('db'),
-  //     req.params.user_id
-  //   )
-  //     .then(() => {
-  //       res.status(204).end()
-  //     })
-  //     .catch(next)
-  // })
   .patch(jsonParser, (req, res, next) => {
     const { life_insurance_goal } = req.body
     const userToUpdate = { life_insurance_goal }
-
-    // console.log(userToUpdate)
 
     const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
     if (numberOfValues === 0)
@@ -125,6 +112,16 @@ usersRouter
       })
       .catch(next)
   })
+  // .delete((req, res, next) => {
+  //   UsersService.deleteUser(
+  //     req.app.get('db'),
+  //     req.params.user_id
+  //   )
+  //     .then(() => {
+  //       res.status(204).end()
+  //     })
+  //     .catch(next)
+  // })
 
 module.exports = usersRouter
 

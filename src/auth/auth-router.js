@@ -34,6 +34,7 @@ authRouter
             })
             const sub=dbUser.email
             const payload = {user_id: dbUser.id}
+
             res.send({
               authToken:AuthService.createJwt(sub,payload),
               payload:payload
@@ -51,7 +52,6 @@ authRouter
   })
   .get((req, res, next) => {
     const user_id = res.user.id
-    console.log("user_id:" + user_id)
     res.json({id:user_id})
   })
 

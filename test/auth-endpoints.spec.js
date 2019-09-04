@@ -68,7 +68,7 @@ describe("Auth Endpoints", function() {
         password: testUser.password
       };
       const expectedToken = jwt.sign(
-        { email: testUser.email },
+        { user_id: testUser.id }, // subject
         process.env.JWT_SECRET,
         {
           subject: testUser.email,
@@ -76,6 +76,7 @@ describe("Auth Endpoints", function() {
           algorithm: "HS256"
         }
       );
+
       return supertest(app)
         .post("/api/auth/login")
         .send(userValidCreds)
@@ -94,7 +95,6 @@ describe("Auth Endpoints", function() {
 
       it("responds with 200 and user id", () => {
         const expectedUser = helpers.makeExpectedUser(testUsers, testUsers[0]);
-        console.log("expected user:" + JSON.stringify(expectedUser));
         const expectedUserId = { id: expectedUser.id }
         return supertest(app)
           .get("/api/auth")

@@ -73,8 +73,6 @@ function makeExpectedUser(users, profile) {
   const user = users
     .find(user => user.id === profile.id)
 
-  // console.log(user)  
-
   return {
     id: profile.id,
     date_created: profile.date_created,
