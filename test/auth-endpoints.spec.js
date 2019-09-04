@@ -62,13 +62,13 @@ describe("Auth Endpoints", function() {
         .expect(400, { error: `Incorrect email or password` });
     });
 
-    it.only(`responds 200 and JWT auth token using secret when valid credentials`, () => {
+    it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
       const userValidCreds = {
         email: testUser.email,
         password: testUser.password
       };
       const expectedToken = jwt.sign(
-        { email: testUser.email }, // payload
+        { email: testUser.email },
         process.env.JWT_SECRET,
         {
           subject: testUser.email,
@@ -94,6 +94,7 @@ describe("Auth Endpoints", function() {
 
       it("responds with 200 and user id", () => {
         const expectedUser = helpers.makeExpectedUser(testUsers, testUsers[0]);
+        console.log("expected user:" + JSON.stringify(expectedUser));
         const expectedUserId = { id: expectedUser.id }
         return supertest(app)
           .get("/api/auth")

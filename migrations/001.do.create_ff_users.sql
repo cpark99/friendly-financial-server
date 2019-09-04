@@ -10,3 +10,18 @@ CREATE TABLE ff_users (
   get_newsletter BOOLEAN NOT NULL,
   date_created TIMESTAMP NOT NULL DEFAULT now()
 );
+
+CREATE OR REPLACE FUNCTION f_ff_users_id_seq(OUT nextfree bigint) AS
+$func$
+BEGIN
+LOOP
+   SELECT INTO nextfree  val
+   FROM   nextval('ff_users_id_seq'::regclass) val  -- use actual name of sequence
+   WHERE  NOT EXISTS (SELECT 1 FROM ff_users WHERE id = val);
+
+   EXIT WHEN FOUND;
+END LOOP; 
+END
+$func$  LANGUAGE plpgsql;
+
+ALTER TABLE ff_users ALTER id SET DEFAULT f_ff_users_id_seq();

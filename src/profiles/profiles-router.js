@@ -76,7 +76,7 @@ profilesRouter
   })
   .get((req, res, next) => {
     res.json(serializeProfile(res.profile))
-    console.log(`res.profile: ${res.profile}`)
+    // console.log(`res.profile: ${res.profile}`)
   })
   .delete((req, res, next) => {
     ProfilesService.deleteProfile(

@@ -215,7 +215,7 @@ describe("Users Endpoints", function() {
       });
 
       context(`Happy path`, () => {
-        it.only(`responds 201, serialized user, storing bcryped password`, () => {
+        it(`responds 201, serialized user, storing bcryped password`, () => {
           const newUser = {
             email: "test@test.com",
             password: "11AAaa!!",
@@ -252,11 +252,11 @@ describe("Users Endpoints", function() {
                 .first()
                 .then(row => {
                   expect(row.email).to.eql(newUser.email)
-                  expect(row.body.name).to.eql(newUser.name)
-                  expect(row.body.phone).to.eql(newUser.phone)
-                  expect(row.body.get_email).to.eql(newUser.get_email)
-                  expect(row.body.get_call).to.eql(newUser.get_call)
-                  expect(row.body.get_newsletter).to.eql(newUser.get_newsletter)
+                  expect(row.name).to.eql(newUser.name)
+                  expect(row.phone).to.eql(newUser.phone)
+                  expect(row.get_email).to.eql(newUser.get_email)
+                  expect(row.get_call).to.eql(newUser.get_call)
+                  expect(row.get_newsletter).to.eql(newUser.get_newsletter)
                   const expectedDate = new Date().toLocaleString('en', { timeZone: 'UTC' })
                   const actualDate = new Date(row.date_created).toLocaleString()
                   expect(actualDate).to.eql(expectedDate)

@@ -1,6 +1,6 @@
 const express = require('express')
 const path = require('path')
-const xss = require('xss')
+// const xss = require('xss')
 const jsonBodyParser = express.json()
 const jsonParser = express.json()
 const { requireAuth } = require('../middleware/jwt-auth')
@@ -89,7 +89,7 @@ usersRouter
   })
   .get((req, res, next) => {
     res.json(UsersService.serializeUser(res.user))
-    console.log(`res.user: ${res.user}`)
+    // console.log(`res.user: ${res.user}`)
   })
   // .delete((req, res, next) => {
   //   UsersService.deleteUser(
@@ -105,7 +105,7 @@ usersRouter
     const { life_insurance_goal } = req.body
     const userToUpdate = { life_insurance_goal }
 
-    console.log(userToUpdate)
+    // console.log(userToUpdate)
 
     const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
     if (numberOfValues === 0)

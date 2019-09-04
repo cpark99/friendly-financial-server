@@ -39,7 +39,7 @@ const UsersService = {
     return bcrypt.hash(password, 12)
   },
   getById(db, id) {
-    console.log(`getById(id): ${id}`)
+    // console.log(`getById(id): ${id}`)
     return db
       .from('ff_users AS u')
       .select(

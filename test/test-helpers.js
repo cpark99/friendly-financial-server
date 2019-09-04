@@ -61,6 +61,7 @@ function seedUsers(db, users) {
   }));
   return db.into('ff_users').insert(preppedUsers)
     .then(() => {
+      // update the auto sequence to stay in sync
       db.raw(
         `SELECT setval('ff_users_id_seq', ?)`,
         [users[users.length - 1].id],
@@ -71,6 +72,8 @@ function seedUsers(db, users) {
 function makeExpectedUser(users, profile) {
   const user = users
     .find(user => user.id === profile.id)
+
+  // console.log(user)  
 
   return {
     id: profile.id,
