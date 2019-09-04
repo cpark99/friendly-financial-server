@@ -15,9 +15,9 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 
-// app.use(cors({
-//   origin: 'https://friendlyfinancial-app.now.sh'
-// }));
+app.use(cors({
+  origin: 'https://friendlyfinancial-app.now.sh'
+}));
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
