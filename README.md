@@ -1,30 +1,60 @@
-# Express Boilerplate!
+### API Documentation:
 
-This is a boilerplate project used for starting new projects!
+  * Base URL
+    *https://lit-plateau-20514.herokuapp.com/api*
 
-## Set up
+#### Login
+___
+Returns authentication token and corresponding user_id for valid requests
+  * **URL** <br />
+    */auth/login*
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+  * **Method** <br />
+    `POST`
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+  * **URL Params**
+    ##### Required:
+    `email=[string]` <br />
+    `password=[string]`
 
-## Scripts
 
-Start the application `npm start`
+  * **Data Params**
+    ```javascript
+    {
+      "email": "email",
+      "password": "password"
+    }
+    ```
 
-Start nodemon for the application `npm run dev`
+  * **Success Response:**
+    * **Code:** 200 <br />
+      **Content:** 
+      ```javascript
+      {
+        "authToken": "$gdskfglkslj445tjo4t", 
+        "payload": { user_id: 1} 
+      }
+      ```
 
-Run the tests `npm test`
+  * **Error Response:**
+    * **Code:** 400 BAD REQUEST <br />
+      **Content:** `{ error: "Missing '${key}' in request body" }`
 
-## Deploying
+      OR
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+    * **Code:** 400 BAD REQUEST <br />
+      **Content:** `{ error: "Incorrect email or password" }`
 
-## Seeding
-
-psql -U friendly-financial -d friendly-financial -f ./seeds/seed.ff_tables.sql
+  * **Sample Call:**
+    ```javascript
+      fetch(`${config.API_ENDPOINT}/auth/login`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+      }).then(res =>
+        !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
+        );
+    ```
+___
