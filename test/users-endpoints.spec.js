@@ -23,64 +23,6 @@ describe("Users Endpoints", function() {
 
   afterEach("cleanup", () => helpers.cleanTables(db));
 
-  describe(`GET /api/users`, () => {
-    context(`Given no Users`, () => {
-      it(`responds with 200 and an empty list`, () => {
-        return supertest(app)
-          .get('/api/users')
-          .expect(200, [])
-      })
-    })
-
-    context('Given there are Users in the database', () => {
-      beforeEach('insert Users', () =>
-        helpers.seedUsers(
-          db,
-          testUsers
-        )
-      )
-
-      it('responds with 200 and all of the Users', () => {
-        const expectedUsers = testUsers.map(user =>
-          helpers.makeExpectedUser(
-            testUsers,
-            user,
-          )
-        )
-        return supertest(app)
-          .get('/api/users')
-          .set('Authorization',helpers.makeAuthHeader(testUsers[0]))
-          .expect(200, expectedUsers)
-      })
-    })
-
-    context(`Given an XSS attack user`, () => {
-      // const testUser = helpers.makeUsersArray()[1]
-      const {
-        maliciousUser,
-        expectedUser,
-      } = helpers.makeMaliciousUser(testUser)
-
-      beforeEach('insert malicious user', () => {
-        return helpers.seedMaliciousUser(
-          db,
-          maliciousUser
-        )
-      })
-
-      it('removes XSS attack content', () => {
-        return supertest(app)
-          .get(`/api/users`)
-          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
-          .expect(200)
-          .expect(res => {
-            expect(res.body[0].name).to.eql(expectedUser.name)
-            expect(res.body[0].life_insurance_goal).to.eql(expectedUser.life_insurance_goal)
-          })
-      })
-    })
-  })
-
   describe(`POST /api/users`, () => {
     context(`User Validation`, () => {
       beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
