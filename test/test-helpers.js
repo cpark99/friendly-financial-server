@@ -120,7 +120,6 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 
 function makeUsersFixtures() {
   const testUsers = makeUsersArray()
-  // const testProfiles = makeProfilesArray(testUsers)
   return { testUsers }
 }
 

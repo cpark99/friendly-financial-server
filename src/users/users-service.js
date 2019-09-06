@@ -4,9 +4,6 @@ const bcrypt = require('bcryptjs')
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
 
 const UsersService = {
-  getAllUsers(knex) {
-    return knex.select('*').from('ff_users')
-  },
   hasUserWithEmail(db, email) {
     return db('ff_users')
       .where({ email })
@@ -81,33 +78,3 @@ const UsersService = {
 }
 
 module.exports = UsersService
-
-// const UsersService = {
-//   getAllUsers(knex) {
-//     return knex.select('*').from('ff_users')
-//   },
-//   insertUser(knex, newUser) {
-//     return knex
-//       .insert(newUser)
-//       .into('ff_users')
-//       .returning('*')
-//       .then(rows => {
-//         return rows[0]
-//       })
-//   },
-//   getById(knex, id) {
-//     return knex.from('ff_users').select('*').where('id', id).first()
-//   },
-//   deleteUser(knex, id) {
-//     return knex('ff_users')
-//       .where({ id })
-//       .delete()
-//   },
-//   updateUser(knex, id, newUserFields) {
-//     return knex('ff_users')
-//       .where({ id })
-//       .update(newUserFields)
-//   },
-// }
-
-// module.exports = UsersService

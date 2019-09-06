@@ -249,7 +249,6 @@ describe("Users Endpoints", function() {
     })
 
     context(`Given an XSS attack user`, () => {
-      // const testUser = helpers.makeUsersArray()[1]
       const {
         maliciousUser,
         expectedUser,
@@ -369,38 +368,4 @@ describe("Users Endpoints", function() {
       })
     })
   })
-
-  // describe.skip(`DELETE /api/users/:user_id`, () => {
-  //   context(`Given no users`, () => {
-  //     it(`responds with 404`, () => {
-  //       const userId = 123456
-  //       return supertest(app)
-  //         .delete(`/api/users/${userId}`)
-  //         .expect(404, { error: { message: `User doesn't exist` } })
-  //     })
-  //   })
-
-  //   context('Given there are users in the database', () => {
-  //     const testUsers = makeUsersArray()
-    
-  //     beforeEach('insert users', () => {
-  //       return db
-  //         .into('ff_users')
-  //         .insert(testUsers)
-  //     })
-      
-  //     it('responds with 204 and removes the user', () => {
-  //       const idToRemove = 2
-  //       const expectedUsers = testUsers.filter(user => user.id !== idToRemove)
-  //       return supertest(app)
-  //         .delete(`/api/users/${idToRemove}`)
-  //         .expect(204)
-  //         .then(res =>
-  //           supertest(app)
-  //             .get(`/api/users`)
-  //             .expect(expectedUsers)
-  //        )
-  //     })
-  //   })
-  // })
 });

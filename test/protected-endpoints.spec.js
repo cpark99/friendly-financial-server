@@ -34,11 +34,7 @@ describe(`Protected endpoints`, () => {
     {
       name: 'GET /api/users/:user_id',
       path: '/api/users/1'
-    },
-    // { // (additional endpoint)
-    //   name: 'GET /api/profiles/:profile_id/comments',
-    //   path: '/api/profiles/1/comments'
-    // },
+    }
   ]
     
   protectedEndpoints.forEach(endpoint => {
