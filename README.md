@@ -9,8 +9,6 @@
 
 ## Login
 
----
-
 Returns authentication token and json data for a registered user
 
 - **URL** <br />
@@ -88,8 +86,6 @@ Returns authentication token and json data for a registered user
 
 ## Show user id
 
----
-
 Returns json data about the authorized user for an authorized request
 
 - **URL** <br />
@@ -146,8 +142,6 @@ Returns json data about the authorized user for an authorized request
     !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
   );
   ```
-
----
 
 ## Register new user
 
@@ -249,8 +243,6 @@ Returns authentication token and json data about the user for newly registered u
 
 ## Show user
 
----
-
 Returns json data about the authorized user for an authorized request
 
 - **URL** <br />
@@ -314,9 +306,10 @@ Returns json data about the authorized user for an authorized request
     **Content:** `{ error: "user doesn't exist" }`
 
 - **Sample Call:**
+
   ```javascript
-  const userId = "1";
-  
+  const userId = 1;
+
   fetch(`${config.API_ENDPOINT}/users/${userId}`, {
     headers: {
       authorization: `bearer ${TokenService.getAuthToken()}`
@@ -324,6 +317,77 @@ Returns json data about the authorized user for an authorized request
   }).then(res =>
     !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
   );
+  ```
+
+---
+
+## Update user life insurance goal
+
+Updates a single, authorized user's life insurance goal data
+
+- **URL** <br />
+  _/users/:id_
+
+- **Method** <br />
+  `PATCH`
+
+- **Headers** <br />
+
+  ```javascript
+    {
+       authorization: `bearer xxxxx.yyyyy.zzzzz`,
+      "Content-Type": "application/json"
+    }
+  ```
+
+- **URL Params**
+
+  ##### Required:
+
+  None
+
+- **Data Params**
+
+  ##### Required:
+
+  `{ "life_insurance_goal": "(string)" }`
+
+- **Success Response:**
+
+  - **Code:** 204 <br />
+    **Content:**
+    None
+
+- **Error Response:**
+
+  - **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error: "Missing bearer token" }`
+
+    OR
+
+  - **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error: "Unauthorized request" }`
+
+    OR
+
+  - **Code:** 400 BAD REQUEST <br />
+    **Content:** `{ error: "Request body must contain 'life_insurance_goal'" }`
+
+- **Sample Call:**
+
+  ```javascript
+  const userId = 1;
+  const user = { life_insurance_goal: "1500000" };
+
+  fetch(`${config.API_ENDPOINT}/users/${userId}`, {
+      method: "PATCH",
+      headers: {
+        authorization: `bearer ${TokenService.getAuthToken()}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    }).then(res => (!res.ok ? res.json().then(e => Promise.reject(e)) : res));
+  }
   ```
 
 ---
