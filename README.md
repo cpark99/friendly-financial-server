@@ -5,7 +5,6 @@
 
 - **CORS** <br />
   NO<br />
-  (if you would like your app to be added, please email cpwebdeveloper99@gmail.com)
 
 ## Login
 
