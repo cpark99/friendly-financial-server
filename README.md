@@ -1,13 +1,13 @@
 ### API Documentation:
 
   * Base URL
-    *https://lit-plateau-20514.herokuapp.com/api*
+    * https://lit-plateau-20514.herokuapp.com/api*
 
 #### Login
 ___
 Returns authentication token and corresponding user_id for valid requests
-  * **URL** <br />
-    */auth/login*
+  * **URL**
+    * /auth/login*
 
   * **Method** <br />
     `POST`
@@ -31,7 +31,7 @@ Returns authentication token and corresponding user_id for valid requests
       **Content:** 
       ```javascript
       {
-        "authToken": "$gdskfglkslj445tjo4t", 
+        "authToken": "xxxxx.yyyyy.zzzzz", 
         "payload": { user_id: 1} 
       }
       ```
@@ -47,6 +47,11 @@ Returns authentication token and corresponding user_id for valid requests
 
   * **Sample Call:**
     ```javascript
+      const credentials = {
+        email: "demo@test.com",
+        password: "pa$$W0rd"
+      }
+
       fetch(`${config.API_ENDPOINT}/auth/login`, {
         method: "POST",
         headers: {
