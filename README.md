@@ -3,7 +3,7 @@
 - **Base URL** <br />
   _https://lit-plateau-20514.herokuapp.com/api_
 
-- **Cors** <br />
+- **CORS** <br />
   NO<br />
   (if you would like your app to be added, please email cpwebdeveloper99@gmail.com)
 
@@ -344,7 +344,7 @@ Updates a single, authorized user's life insurance goal data
 
   ##### Required:
 
-  None
+  `id=[integer]`
 
 - **Data Params**
 
