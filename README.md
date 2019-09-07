@@ -1,5 +1,12 @@
 # API Documentation:
 
+- **Client App** <br />
+  [Link](https://friendlyfinancial-app.now.sh)
+
+[Repo](https://github.com/cpark99/friendly-financial-app)
+
+---
+
 - **Base URL** <br />
   _https://lit-plateau-20514.herokuapp.com/api_
 
@@ -66,19 +73,17 @@ Returns authentication token and json data for a registered user
 
   ```javascript
   const credentials = {
-    email: "demo@test.com",
-    password: "pa$$W0rd"
+    email: 'demo@test.com',
+    password: 'pa$$W0rd'
   };
 
   fetch(`${config.API_ENDPOINT}/auth/login`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "content-type": "application/json"
+      'content-type': 'application/json'
     },
     body: JSON.stringify(credentials)
-  }).then(res =>
-    !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
-  );
+  }).then(res => (!res.ok ? res.json().then(e => Promise.reject(e)) : res.json()));
   ```
 
 ---
@@ -135,11 +140,9 @@ Returns json data about the authorized user for an authorized request
   fetch(`${config.API_ENDPOINT}/auth`, {
     headers: {
       authorization: `bearer xxxxx.yyyyy.zzzzz`,
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
-  }).then(res =>
-    !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
-  );
+  }).then(res => (!res.ok ? res.json().then(e => Promise.reject(e)) : res.json()));
   ```
 
 ## Register new user
@@ -217,25 +220,23 @@ Returns authentication token and json data about the user for newly registered u
 
   ```javascript
   const user = {
-    email: "demo@test.com",
-    password: "pa$$W0rd",
-    name: "Jane Doe",
-    phone: "2131234567",
-    life_insurance_goal: "",
+    email: 'demo@test.com',
+    password: 'pa$$W0rd',
+    name: 'Jane Doe',
+    phone: '2131234567',
+    life_insurance_goal: '',
     get_email: true,
     get_call: true,
     get_newsletter: true
   };
 
   fetch(`${config.API_ENDPOINT}/users`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "content-type": "application/json"
+      'content-type': 'application/json'
     },
     body: JSON.stringify(user)
-  }).then(res =>
-    !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
-  );
+  }).then(res => (!res.ok ? res.json().then(e => Promise.reject(e)) : res.json()));
   ```
 
 ---
@@ -313,9 +314,7 @@ Returns json data about the authorized user for an authorized request
     headers: {
       authorization: `bearer ${TokenService.getAuthToken()}`
     }
-  }).then(res =>
-    !res.ok ? res.json().then(e => Promise.reject(e)) : res.json()
-  );
+  }).then(res => (!res.ok ? res.json().then(e => Promise.reject(e)) : res.json()));
   ```
 
 ---

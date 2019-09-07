@@ -1,12 +1,12 @@
-const express = require("express");
-const path = require("path");
+const express = require('express');
+const path = require('path');
 const jsonBodyParser = express.json();
 const jsonParser = express.json();
-const { requireAuth } = require("../middleware/jwt-auth");
-const UsersService = require("./users-service");
+const { requireAuth } = require('../middleware/jwt-auth');
+const UsersService = require('./users-service');
 const usersRouter = express.Router();
 
-usersRouter.route("/").post(jsonBodyParser, (req, res, next) => {
+usersRouter.route('/').post(jsonBodyParser, (req, res, next) => {
   const {
     password,
     email,
@@ -19,13 +19,13 @@ usersRouter.route("/").post(jsonBodyParser, (req, res, next) => {
   } = req.body;
 
   for (const field of [
-    "email",
-    "password",
-    "name",
-    "phone",
-    "get_email",
-    "get_call",
-    "get_newsletter"
+    'email',
+    'password',
+    'name',
+    'phone',
+    'get_email',
+    'get_call',
+    'get_newsletter'
   ])
     if (!req.body[field])
       return res.status(400).json({
@@ -36,10 +36,9 @@ usersRouter.route("/").post(jsonBodyParser, (req, res, next) => {
 
   if (passwordError) return res.status(400).json({ error: passwordError });
 
-  UsersService.hasUserWithEmail(req.app.get("db"), email)
+  UsersService.hasUserWithEmail(req.app.get('db'), email)
     .then(hasUserWithEmail => {
-      if (hasUserWithEmail)
-        return res.status(400).json({ error: `Email already taken` });
+      if (hasUserWithEmail) return res.status(400).json({ error: `Email already taken` });
 
       return UsersService.hashPassword(password).then(hashedPassword => {
         const newUser = {
@@ -51,27 +50,25 @@ usersRouter.route("/").post(jsonBodyParser, (req, res, next) => {
           get_email,
           get_call,
           get_newsletter,
-          date_created: "now()"
+          date_created: 'now()'
         };
 
-        return UsersService.insertUser(req.app.get("db"), newUser).then(
-          user => {
-            res
-              .status(201)
-              .location(path.posix.join(req.originalUrl, `/${user.id}`))
-              .json(UsersService.serializeUser(user));
-          }
-        );
+        return UsersService.insertUser(req.app.get('db'), newUser).then(user => {
+          res
+            .status(201)
+            .location(path.posix.join(req.originalUrl, `/${user.id}`))
+            .json(UsersService.serializeUser(user));
+        });
       });
     })
     .catch(next);
 });
 
 usersRouter
-  .route("/:user_id")
+  .route('/:user_id')
   .all(requireAuth)
   .all((req, res, next) => {
-    UsersService.getById(req.app.get("db"), req.params.user_id)
+    UsersService.getById(req.app.get('db'), req.params.user_id)
       .then(user => {
         if (!user) {
           return res.status(404).json({
@@ -98,7 +95,7 @@ usersRouter
         }
       });
 
-    UsersService.updateUser(req.app.get("db"), req.params.user_id, userToUpdate)
+    UsersService.updateUser(req.app.get('db'), req.params.user_id, userToUpdate)
       .then(numRowsAffected => {
         res.status(204).end();
       })

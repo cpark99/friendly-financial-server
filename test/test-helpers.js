@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 function makeUsersArray() {
   return [
@@ -50,8 +50,8 @@ function makeUsersArray() {
       get_email: true,
       get_call: false,
       get_newsletter: true
-    },
-  ]
+    }
+  ];
 }
 
 function seedUsers(db, users) {
@@ -59,19 +59,17 @@ function seedUsers(db, users) {
     ...user,
     password: bcrypt.hashSync(user.password, 1)
   }));
-  return db.into('ff_users').insert(preppedUsers)
+  return db
+    .into('ff_users')
+    .insert(preppedUsers)
     .then(() => {
       // update the auto sequence to stay in sync
-      db.raw(
-        `SELECT setval('ff_users_id_seq', ?)`,
-        [users[users.length - 1].id],
-      )
+      db.raw(`SELECT setval('ff_users_id_seq', ?)`, [users[users.length - 1].id]);
     });
 }
 
 function makeExpectedUser(users, profile) {
-  const user = users
-    .find(user => user.id === profile.id)
+  const user = users.find(user => user.id === profile.id);
 
   return {
     id: profile.id,
@@ -83,7 +81,7 @@ function makeExpectedUser(users, profile) {
     get_email: profile.get_email,
     get_call: profile.get_call,
     get_newsletter: profile.get_newsletter
-  }
+  };
 }
 
 function makeMaliciousUser(user) {
@@ -98,29 +96,29 @@ function makeMaliciousUser(user) {
     get_email: true,
     get_call: true,
     get_newsletter: true
-  }
+  };
   const expectedUser = {
     ...makeExpectedUser([user], maliciousUser),
-    name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
-    life_insurance_goal: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`,
-  }
+    name: 'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
+    life_insurance_goal: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
+  };
   return {
     maliciousUser,
-    expectedUser,
-  }
+    expectedUser
+  };
 }
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ email: user.email }, secret, {
     subject: user.email,
-    algorithm: 'HS256',
-  })
-  return `Bearer ${token}`
+    algorithm: 'HS256'
+  });
+  return `Bearer ${token}`;
 }
 
 function makeUsersFixtures() {
-  const testUsers = makeUsersArray()
-  return { testUsers }
+  const testUsers = makeUsersArray();
+  return { testUsers };
 }
 
 function cleanTables(db) {
@@ -128,13 +126,11 @@ function cleanTables(db) {
     `TRUNCATE
       ff_users
       RESTART IDENTITY CASCADE`
-  )
+  );
 }
 
 function seedMaliciousUser(db, profile) {
-  return db
-    .into('ff_users')
-    .insert([profile])
+  return db.into('ff_users').insert([profile]);
 }
 
 module.exports = {
@@ -145,5 +141,5 @@ module.exports = {
   makeUsersFixtures,
   cleanTables,
   seedMaliciousUser,
-  seedUsers,
-}
+  seedUsers
+};
