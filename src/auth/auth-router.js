@@ -39,7 +39,7 @@ authRouter
       })
       .catch(next);
   })
-  .route('/')
+  .route('/') // route to get user id's from authentication token
   .all(requireAuth, (req, res, next) => {
     let user = { id: null };
     user.id = req.user.id;

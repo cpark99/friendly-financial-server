@@ -3,7 +3,7 @@
 - **Client App** <br />
   [Link](https://friendlyfinancial-app.now.sh)
 
-[Repo](https://github.com/cpark99/friendly-financial-app)
+  [Repo](https://github.com/cpark99/friendly-financial-app)
 
 ---
 
