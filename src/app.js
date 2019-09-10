@@ -17,7 +17,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: 'https://friendlyfinancial-app.now.sh'
+    origin: 'https://friendlyfinancial.netlify.com'
   })
 );
 
