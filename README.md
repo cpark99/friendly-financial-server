@@ -1,7 +1,7 @@
 # API Documentation:
 
 - **Client App** <br />
-  [Link](https://friendlyfinancial-app.now.sh)
+  [Link](https://friendlyfinancial.netlify.com)
 
   [Repo](https://github.com/cpark99/friendly-financial-app)
 
