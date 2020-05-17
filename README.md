@@ -1,17 +1,12 @@
 # API Documentation:
 
-- **Client App** <br />
-  [Link](https://friendlyfinancial.netlify.com)
-
-  [Repo](https://github.com/cpark99/friendly-financial-app)
+- **Client [Link](https://friendlyfinancial.netlify.com) [Repo](https://github.com/cpark99/friendly-financial-app)**
 
 ---
 
-- **Base URL** <br />
-  _https://lit-plateau-20514.herokuapp.com/api_
+- **Base URL _https://lit-plateau-20514.herokuapp.com/api_**
 
-- **CORS** <br />
-  NO<br />
+- **CORS** NO<br />
 
 ## Login
 
